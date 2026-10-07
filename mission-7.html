@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enchanted Python Garden · Mission 7</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+<style>
+:root{--bg:#100d20;--panel:#1c1634;--line:#ffffff20;--text:#f8f4ff;--muted:#cfc6df;--mint:#73e7bd;--pink:#ff9dce;--gold:#ffe08b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 75% 15%,#43265f 0,#17112c 38%,#0d0a19 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
+header{max-width:1450px;margin:auto;padding:20px 24px 12px;display:flex;justify-content:space-between;align-items:center}.brand{font-size:clamp(24px,4vw,42px);font-weight:900}.badge{border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--muted)}
+.app{max-width:1450px;margin:auto;padding:10px 24px 28px;display:grid;grid-template-columns:minmax(400px,.95fr) minmax(480px,1.05fr);gap:22px}.card{background:#171229dd;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 20px 55px #0006}.head{padding:15px 18px;border-bottom:1px solid var(--line);font-weight:850}
+.mission{padding:17px 19px;background:linear-gradient(90deg,#ff8ed821,#b99cff19);line-height:1.55;color:var(--muted)}.mission strong{color:#fff}.mission code{background:#ffffff12;color:var(--gold);padding:2px 6px;border-radius:6px}
+.editorShell{position:relative;height:570px;background:var(--bg);overflow:hidden}
+#paint,#code{position:absolute;inset:0;width:100%;height:100%;padding:20px;margin:0;border:0;overflow:auto;white-space:pre-wrap;overflow-wrap:normal;font:15px/1.62 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:400;font-style:normal;letter-spacing:0;tab-size:4}
+#paint{pointer-events:none;color:#f8f4ff;background:var(--bg)}#code{resize:none;outline:0;background:transparent;color:transparent;-webkit-text-fill-color:transparent;caret-color:#fff}#code::selection{background:#a98aff55}
+.c{color:var(--mint)}.s{color:#ffd884}.n{color:#8fdcff}.b{color:#ff9ed1}.k{color:#c7adff}.f{color:#ffb8e2}.bad{background:#ff4e8738;box-shadow:inset 4px 0 #ff709f}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-top:1px solid var(--line)}button{border:0;border-radius:12px;padding:11px 16px;font-weight:850;cursor:pointer}.run{background:linear-gradient(135deg,#ff8ed8,#b89cff);color:#20132e}.ghost{background:#ffffff10;color:#eee;border:1px solid var(--line)}button:disabled{opacity:.45}.status{margin-left:auto;color:var(--muted);font-size:13px}
+#error{display:none;margin:0 16px 17px;padding:22px;border:2px solid #ff8bb6aa;border-radius:18px;background:linear-gradient(135deg,#6e204bbd,#321d57c9);font-size:16px;line-height:1.55}#error.show{display:block}.errTitle{font-size:24px;font-weight:950;margin-bottom:10px}.errLine{margin:13px 0;padding:12px;background:#0d0a19aa;border-left:4px solid #ff82af;border-radius:7px;font:14px/1.45 ui-monospace,monospace}.fix{padding:13px;background:#73e7bd16;border:1px solid #73e7bd50;border-radius:10px}.fix code,#error code{color:var(--gold)}
+.stage{height:760px;position:relative;overflow:hidden;background:linear-gradient(#17173d 0,#382757 48%,#82668a 72%,#294f43 73%)}.moon{position:absolute;width:115px;height:115px;border-radius:50%;right:9%;top:8%;background:#fff7cf;box-shadow:0 0 50px #fff0a780}.hill{position:absolute;left:-8%;right:-8%;bottom:-80px;height:280px;background:#163d35;border-radius:50% 50% 0 0/35% 35% 0 0}.label{position:absolute;bottom:20px;z-index:20;background:#100d20aa;border:1px solid var(--line);padding:7px 11px;border-radius:999px;font-size:12px}.luna{left:18%}.yours{right:16%;border-style:dashed}
+.flower{position:absolute;transform:translate(-50%,-100%);z-index:8}.stem{position:absolute;width:5px;height:120px;background:#39875f;left:50%;top:35px;transform:translateX(-50%);border-radius:8px}.headflower{position:relative;width:var(--sz);height:var(--sz);filter:drop-shadow(0 5px 7px #0004)}.petal{position:absolute;left:50%;top:50%;width:42%;height:55%;background:var(--pc);border-radius:60% 60% 48% 48%;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(var(--r)) translateY(-22%)}.petal.heart{clip-path:polygon(50% 92%,8% 45%,7% 25%,20% 9%,38% 9%,50% 22%,62% 9%,80% 9%,93% 25%,92% 45%)}.petal.pointed{clip-path:polygon(50% 0,100% 75%,50% 100%,0 75%)}.petal.star{clip-path:polygon(50% 0,62% 34%,98% 38%,70% 60%,80% 96%,50% 76%,20% 96%,30% 60%,2% 38%,38% 34%)}.centre{position:absolute;width:28%;height:28%;left:36%;top:36%;border-radius:50%;background:var(--cc);z-index:4;box-shadow:0 0 14px #fff5}.spark{position:absolute;color:#fff;font-size:12px;animation:tw 1.4s infinite alternate}@keyframes tw{to{opacity:.2;transform:scale(.65)}}.glow{filter:drop-shadow(0 0 13px var(--pc))}.stars{position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:73px 73px;opacity:.5}
+
+.learning{max-width:1450px;margin:0 auto 34px;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.learnCard{background:#171229dd;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 20px 55px #0005}
+.learnTitle{padding:18px 20px;border-bottom:1px solid var(--line);font-size:19px;font-weight:900}
+.learnBody{padding:18px 20px}
+.powerIntro{color:var(--muted);line-height:1.5;margin-bottom:15px}
+.powers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.power{padding:13px;border:1px solid var(--line);border-radius:14px;background:#ffffff08;line-height:1.35}
+.power b{display:block;color:#fff;margin-bottom:4px}.power span{font-size:13px;color:var(--muted)}
+.challenge{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line);line-height:1.45}
+.challenge:last-child{border-bottom:0}.challengeIcon{width:35px;height:35px;flex:0 0 35px;border-radius:50%;display:grid;place-items:center;background:#ffffff10}
+.challenge b{color:#fff}.challenge span{color:var(--muted);font-size:13px}
+.tip{margin-top:14px;padding:12px 14px;border-radius:13px;background:#73e7bd10;border:1px solid #73e7bd38;color:var(--muted);font-size:13px;line-height:1.45}
+.celebrate{display:none;margin:0 auto 24px;max-width:1402px;padding:16px 20px;border:1px solid #ffe08b55;border-radius:18px;background:linear-gradient(90deg,#ff8ed817,#ffe08b13);font-weight:800}
+.celebrate.show{display:block}
+@media(max-width:950px){.app{grid-template-columns:1fr}.stage{height:620px}.editorShell{height:540px}.learning{grid-template-columns:1fr}.powers{grid-template-columns:1fr}}
+
+
+.courseNav{max-width:1450px;margin:0 auto 26px;padding:0 24px;display:flex;justify-content:space-between;gap:14px}
+.navBtn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;border-radius:14px;padding:13px 18px;font-weight:900;border:1px solid var(--line);transition:transform .18s ease,box-shadow .18s ease}
+.navBtn:hover{transform:translateY(-2px)}.navNext{margin-left:auto;background:linear-gradient(135deg,#ff8ed8,#b89cff);color:#20132e;box-shadow:0 8px 28px #c48cff28}
+.navBack{background:#ffffff0c;color:#f8f4ff}.navHint{opacity:.75;font-size:12px;font-weight:700}
+@media(max-width:600px){.courseNav{flex-direction:column}.navBtn{justify-content:center;width:100%}.navNext{margin-left:0}}
+
+.butterfly{position:absolute;width:0;height:0;z-index:8;filter:drop-shadow(0 0 8px #ffffff55);transform:translate(-50%,-50%) scale(var(--bfly-scale,1));animation:flutter 2.4s ease-in-out infinite}
+.bflyWing{position:absolute;width:28px;height:36px;top:-18px;background:var(--wing);border:2px solid #ffffff55;box-shadow:inset 0 0 12px #ffffff45}
+.bflyWing.left{right:2px;border-radius:75% 30% 70% 35%;transform-origin:right center;animation:wingLeft .55s ease-in-out infinite alternate}
+.bflyWing.right{left:2px;border-radius:30% 75% 35% 70%;transform-origin:left center;animation:wingRight .55s ease-in-out infinite alternate}
+.bflyBody{position:absolute;left:-3px;top:-13px;width:6px;height:27px;border-radius:999px;background:#2a173d;box-shadow:0 0 7px #ffffff55}
+.bflyDot{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--dot);top:-4px}
+.bflyDot.d1{left:-19px}.bflyDot.d2{left:13px}
+.bflyTrail{position:absolute;left:-2px;top:12px;width:4px;height:4px;border-radius:50%;background:#fff5b8;box-shadow:-12px 10px 0 #fff5b8aa,-24px 17px 0 #fff5b866;animation:twinkle 1.2s ease-in-out infinite alternate}
+@keyframes wingLeft{from{transform:rotateY(15deg) rotate(-10deg)}to{transform:rotateY(65deg) rotate(-3deg)}}
+@keyframes wingRight{from{transform:rotateY(-15deg) rotate(10deg)}to{transform:rotateY(-65deg) rotate(3deg)}}
+@keyframes flutter{0%,100%{transform:translate(-50%,-50%) translateY(0) scale(var(--bfly-scale,1)) rotate(-2deg)}50%{transform:translate(-50%,-50%) translateY(-8px) scale(var(--bfly-scale,1)) rotate(3deg)}}
+.weatherLayer{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}.rainDrop{position:absolute;top:-30px;width:2px;height:22px;border-radius:99px;background:#bfe9ffbb;animation:rainFall 1s linear infinite}.sunGlow{position:absolute;width:170px;height:170px;border-radius:50%;right:4%;top:3%;background:radial-gradient(circle,#fff7b8aa 0,#ffd86a55 38%,transparent 72%);animation:sunPulse 2.5s ease-in-out infinite alternate}.cloudPuff{position:absolute;top:12%;left:12%;width:105px;height:34px;border-radius:999px;background:#dcd9e8cc;box-shadow:30px -17px 0 5px #e9e7f0cc,63px 0 0 -2px #dcd9e8cc;animation:cloudDrift 8s ease-in-out infinite alternate}.rainbowArc{position:absolute;left:50%;top:17%;width:230px;height:115px;transform:translateX(-50%);border-radius:230px 230px 0 0;border:10px solid #ff8fcf;border-bottom:0;box-shadow:0 -10px 0 #ffd76a,0 -20px 0 #8ee6b2,0 -30px 0 #84cfff,0 -40px 0 #b99cff;opacity:.8}@keyframes rainFall{from{transform:translateY(-20px)}to{transform:translateY(800px)}}@keyframes sunPulse{from{transform:scale(.94);opacity:.7}to{transform:scale(1.06);opacity:1}}@keyframes cloudDrift{from{transform:translateX(-15px)}to{transform:translateX(120px)}}
+.fairy{position:absolute;z-index:12;width:12px;height:18px;transform:translate(-50%,-50%);animation:fairyFloat 2.3s ease-in-out infinite;filter:drop-shadow(0 0 8px #fff3b0)}
+.fairyBody{position:absolute;left:4px;top:5px;width:5px;height:11px;border-radius:60% 60% 45% 45%;background:#fff7c7;box-shadow:0 0 10px #fff1a8}
+.fairyHead{position:absolute;left:4px;top:0;width:6px;height:6px;border-radius:50%;background:#ffe4c9}
+.fairyWing{position:absolute;top:4px;width:12px;height:8px;background:#d9f7ffbb;border:1px solid #fff;border-radius:80% 20% 80% 20%;animation:fairyWing .45s ease-in-out infinite alternate}
+.fairyWing.l{right:7px;transform-origin:right center}.fairyWing.r{left:8px;transform-origin:left center;scale:-1 1}
+.fairySpark{position:absolute;left:5px;top:16px;width:3px;height:3px;border-radius:50%;background:#fff7a8;box-shadow:-9px 8px 0 #ffb9ec,8px 11px 0 #bcecff,1px 19px 0 #fff7a8aa}
+@keyframes fairyFloat{0%,100%{translate:0 0;rotate:-3deg}50%{translate:0 -10px;rotate:3deg}}
+@keyframes fairyWing{from{transform:rotate(8deg) scaleX(1)}to{transform:rotate(25deg) scaleX(.55)}}
+
+.bee{position:absolute;z-index:13;width:28px;height:18px;transform:translate(-50%,-50%);animation:beeBuzz 1.8s ease-in-out infinite;filter:drop-shadow(0 0 5px #ffe36a88)}
+.beeBody{position:absolute;inset:3px 0;border-radius:60%;background:repeating-linear-gradient(90deg,#ffd84d 0 7px,#33273d 7px 11px)}
+.beeWing{position:absolute;top:-6px;width:13px;height:11px;border-radius:70% 30% 70% 30%;background:#e9fbffbb;border:1px solid #fff}
+.beeWing.l{left:3px;transform:rotate(-28deg)}.beeWing.r{right:3px;transform:scaleX(-1) rotate(-28deg)}
+.beeEye{position:absolute;right:2px;top:7px;width:3px;height:3px;border-radius:50%;background:#15101d}
+.beeTrail{position:absolute;right:24px;top:9px;width:24px;height:12px;border-top:2px dotted #fff5a877;border-radius:50%;transform:rotate(-10deg)}
+@keyframes beeBuzz{0%,100%{translate:0 0;rotate:-4deg}50%{translate:5px -8px;rotate:5deg}}
+</style>
+</head>
+<body>
+<header><div class="brand">🌸 ENCHANTED PYTHON GARDEN 🌸</div><div class="badge">MISSION 7 · BEE BEHAVIOUR</div></header>
+<main class="app">
+<section class="card">
+ <div class="head">✨ LEARN PYTHON BY GROWING A GARDEN</div>
+ <div class="mission"><strong>🐝 MISSION 7: Program a Bee's Behaviour!</strong><br><br>
+① Your garden has objects, loops, randomness, decisions and functions. Now we'll <strong>combine them</strong>.<br>
+② Each flower has a nectar score.<br>
+③ The bee checks each flower using <code>if nectar >= 7:</code>.<br>
+④ If a flower has enough nectar, the bee visits it. Otherwise, it skips it.<br>
+⑤ This is an <strong>algorithm</strong>: a set of rules that controls behaviour.<br>
+⑥ Change the data or the rule and watch your bee make different decisions. ✨
+</div><div class="editorShell"><pre id="paint" aria-hidden="true"></pre><textarea id="code" spellcheck="false"></textarea></div>
+ <div class="actions"><button id="run" class="run" disabled>▶ RUN MY GARDEN</button><button id="reset" class="ghost">Reset</button><div id="status" class="status">Python is waking up… ✨</div></div>
+ <div id="error" role="alert" aria-live="polite"></div>
+</section>
+<section class="card">
+ <div class="head">🌷 YOUR GARDEN</div>
+ <div id="stage" class="stage"><div class="stars"></div><div class="moon"></div><div class="hill"></div><div class="label luna">🐝 BEE LAB</div><div class="label yours">🧠 CODE → DECISION → BEHAVIOUR</div></div>
+</section>
+</main>
+
+<section class="learning">
+<article class="learnCard"><div class="learnTitle">✨ NEW PYTHON POWER: ALGORITHMS + COMPARISONS</div><div class="learnBody">
+<div class="powerIntro">You're no longer just drawing a garden. You're writing rules that control how something behaves.</div>
+<div class="powers">
+<div class="power"><b>📊 Data</b><span>Each flower stores an x position, y position and nectar score.</span></div>
+<div class="power"><b>🔎 Indexing</b><span><code>flower[0]</code>, <code>flower[1]</code> and <code>flower[2]</code> retrieve values from a list.</span></div>
+<div class="power"><b>⚖️ <code>&gt;=</code></b><span>Means “greater than or equal to”. It lets Python compare numbers.</span></div>
+<div class="power"><b>❓ Condition</b><span><code>if nectar &gt;= 7</code> decides whether the bee should visit.</span></div>
+<div class="power"><b>🔁 Loop + condition</b><span>The same rule is tested against every flower.</span></div>
+<div class="power"><b>🤖 Algorithm</b><span>Data goes in, rules are applied, and behaviour comes out.</span></div>
+</div></div></article>
+<article class="learnCard"><div class="learnTitle">🐝 TRY THIS! — CHANGE THE BEE'S BRAIN</div><div class="learnBody">
+<div class="challenge"><div class="challengeIcon">🍯</div><div><b>Easy · Lower the standard</b><br><span>Change <code>nectar &gt;= 7</code> to <code>nectar &gt;= 5</code>. Predict which extra flowers will be visited.</span></div></div>
+<div class="challenge"><div class="challengeIcon">📊</div><div><b>Medium · Change the data</b><br><span>Give the first flower a nectar score of 10. Does the same algorithm now make a different decision?</span></div></div>
+<div class="challenge"><div class="challengeIcon">⚖️</div><div><b>Tricky · Make a picky bee</b><br><span>Change the rule so the bee visits only flowers with nectar greater than 8.</span></div></div>
+<div class="challenge"><div class="challengeIcon">🧠</div><div><b>Code Detective · Find the algorithm</b><br><span>Which lines contain the bee's decision-making rule? Which lines are data instead?</span></div></div>
+<div class="tip">💡 <b>Big idea:</b> Software behaviour comes from data + rules. Change either one and the result can change — a foundation for games, automation, AI and cybersecurity.</div>
+</div></article></section>
+
+<nav class="courseNav" aria-label="Course navigation">
+<a class="navBtn navBack" href="mission-6.html">← 🧚 MISSION 6: FUNCTIONS</a>
+<a class="navBtn navNext" href="mission-8.html"><span><span class="navHint">COMING NEXT</span><br>MISSION 8: BUILD A GARDEN SPECIES 🧬 →</span></a>
+</nav>
+<script>
+const $=q=>document.querySelector(q);
+const starter=`# 🐝 MISSION 7 — PROGRAM A BEE'S BEHAVIOUR!
+
+# Each little list describes one flower:
+# [x position, y position, nectar score]
+
+flowers = [
+    [18, 72, 4],
+    [34, 66, 9],
+    [50, 73, 7],
+    [66, 65, 3],
+    [82, 72, 10]
+]
+
+
+# First, grow the flowers.
+for flower in flowers:
+
+    x = flower[0]
+    y = flower[1]
+    nectar = flower[2]
+
+    bloom = Flower(
+        petals=8,
+        petal_shape="heart",
+        petal_colour="#ff86d3",
+        centre_colour="#ffd65c",
+        size=52,
+        glitter=True,
+        glow=True
+    )
+
+    bloom.draw(x=x, y=y)
+
+
+# Now give our bee a RULE.
+#
+# The bee only visits flowers with
+# a nectar score of 7 OR HIGHER.
+
+for flower in flowers:
+
+    x = flower[0]
+    y = flower[1]
+    nectar = flower[2]
+
+    if nectar >= 7:
+        bee_visit(x, y - 13)
+
+    else:
+        mark_skipped(x, y - 13)
+
+
+# 🧠 EXPERIMENT:
+# Change >= 7 to >= 5.
+# Does the bee visit more flowers?
+#
+# Then change some nectar scores!
+`;
+$("#code").value=starter;
+
+function esc(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function lex(line){
+ let o="",i=0,keys=new Set(["class","def","if","else","elif","for","in","while","return","import","from","as","and","or","not"]), bools=new Set(["True","False","None"]);
+ while(i<line.length){
+  let ch=line[i];
+  if(ch==="#"){o+='<span class="c">'+esc(line.slice(i))+'</span>';break}
+  if(ch==='"'||ch==="'"){let q=ch,j=i+1,e=false;while(j<line.length){let z=line[j];if(!e&&z===q){j++;break}if(!e&&z==="\\")e=true;else e=false;j++}o+='<span class="s">'+esc(line.slice(i,j))+'</span>';i=j;continue}
+  if(/[0-9]/.test(ch)){let j=i+1;while(j<line.length&&/[0-9.]/.test(line[j]))j++;o+='<span class="n">'+esc(line.slice(i,j))+'</span>';i=j;continue}
+  if(/[A-Za-z_]/.test(ch)){let j=i+1;while(j<line.length&&/[A-Za-z0-9_]/.test(line[j]))j++;let w=line.slice(i,j),cl=bools.has(w)?"b":keys.has(w)?"k":(w==="Flower"?"f":"");o+=cl?`<span class="${cl}">${w}</span>`:w;i=j;continue}
+  o+=esc(ch);i++;
+ }return o
+}
+let badLine=null;
+function paint(){
+ let lines=$("#code").value.split("\n");
+ $("#paint").innerHTML=lines.map((l,i)=>badLine===i+1?`<span class="bad">${lex(l)||"&nbsp;"}</span>`:lex(l)).join("\n")+" ";
+ $("#paint").scrollTop=$("#code").scrollTop;$("#paint").scrollLeft=$("#code").scrollLeft;
+}
+$("#code").addEventListener("input",()=>{badLine=null;hideError();paint()});
+$("#code").addEventListener("scroll",paint);paint();
+
+function baseScene(){document.querySelectorAll(".flower, .butterfly, .weatherLayer, .fairy, .bee, .skipMark").forEach(x=>x.remove());document.getElementById("weatherMessage")?.remove()}
+window.draw_flower=(petals,shape,pc,cc,size,glitter,glow,x,y)=>{
+ const wrap=document.createElement("div");wrap.className="flower";wrap.style.left=x+"%";wrap.style.top=y+"%";
+ const stem=document.createElement("div");stem.className="stem";wrap.appendChild(stem);
+ const h=document.createElement("div");h.className="headflower"+(glow?" glow":"");h.style.setProperty("--sz",size+"px");h.style.setProperty("--pc",pc);h.style.setProperty("--cc",cc);
+ for(let i=0;i<petals;i++){let p=document.createElement("div");p.className="petal "+shape;p.style.setProperty("--r",(360/petals*i)+"deg");h.appendChild(p)}
+ let c=document.createElement("div");c.className="centre";h.appendChild(c);
+ if(glitter)for(let i=0;i<5;i++){let q=document.createElement("span");q.className="spark";q.textContent="✦";q.style.left=(10+Math.random()*80)+"%";q.style.top=(5+Math.random()*80)+"%";q.style.animationDelay=(Math.random())+"s";h.appendChild(q)}
+ wrap.appendChild(h);$("#stage").appendChild(wrap);
+};
+
+
+window.draw_butterfly=(proxy)=>{
+ const o=proxy && typeof proxy.toJs==="function"
+   ? Object.fromEntries(proxy.toJs())
+   : proxy;
+ const g=document.getElementById("stage"), b=document.createElement("div");
+ b.className="butterfly";
+ b.style.left=Number(o.x)+"%";
+ b.style.top=Number(o.y)+"%";
+ b.style.setProperty("--wing",o.wing_colour);
+ b.style.setProperty("--dot",o.dot_colour);
+ const scale=Math.max(.45,Math.min(1.6,Number(o.size)/55));
+ b.style.setProperty("--bfly-scale",scale);
+ b.innerHTML=`<div class="bflyWing left"></div><div class="bflyWing right"></div><div class="bflyBody"></div><div class="bflyDot d1"></div><div class="bflyDot d2"></div>${o.sparkle?'<div class="bflyTrail"></div>':''}`;
+ g.appendChild(b);
+ if(proxy && typeof proxy.destroy==="function") proxy.destroy();
+};
+
+window.set_garden_weather=(kind)=>{const stage=document.getElementById("stage");stage.querySelectorAll(".weatherLayer").forEach(x=>x.remove());const layer=document.createElement("div");layer.className="weatherLayer";if(kind==="rain"){for(let i=0;i<42;i++){const d=document.createElement("i");d.className="rainDrop";d.style.left=(i*17%100)+"%";d.style.animationDelay=(-(i%10)/10)+"s";layer.appendChild(d)}}else if(kind==="sunny"){layer.innerHTML='<div class="sunGlow"></div>'}else if(kind==="cloudy"){layer.innerHTML='<div class="cloudPuff"></div><div class="cloudPuff" style="left:52%;top:20%;animation-delay:-3s"></div>'}else{layer.innerHTML='<div class="rainbowArc"></div><div class="sunGlow"></div>'}stage.appendChild(layer)};window.show_garden_message=(text)=>{let m=document.getElementById("weatherMessage");if(!m){m=document.createElement("div");m.id="weatherMessage";m.className="label";m.style.cssText="left:50%;bottom:65px;transform:translateX(-50%);font-size:16px;z-index:30;white-space:nowrap";document.getElementById("stage").appendChild(m)}m.textContent=String(text)};
+
+window.summon_garden_fairy=(x,y)=>{
+ const stage=document.getElementById("stage"), f=document.createElement("div");
+ f.className="fairy"; f.style.left=Number(x)+"%"; f.style.top=Number(y)+"%";
+ f.innerHTML='<div class="fairyWing l"></div><div class="fairyWing r"></div><div class="fairyBody"></div><div class="fairyHead"></div><div class="fairySpark"></div>';
+ stage.appendChild(f);
+};
+
+
+window.draw_bee_visit=(x,y)=>{
+ const stage=document.getElementById("stage"), b=document.createElement("div");
+ b.className="bee";b.style.left=Number(x)+"%";b.style.top=Number(y)+"%";
+ b.innerHTML='<div class="beeTrail"></div><div class="beeWing l"></div><div class="beeWing r"></div><div class="beeBody"></div><div class="beeEye"></div>';
+ stage.appendChild(b);
+};
+window.draw_skip_mark=(x,y)=>{
+ const stage=document.getElementById("stage"), m=document.createElement("div");
+ m.className="skipMark";m.style.cssText=`position:absolute;left:${Number(x)}%;top:${Number(y)}%;transform:translate(-50%,-50%);z-index:12;font-size:18px;opacity:.65`;
+ m.textContent="·";stage.appendChild(m);
+};
+
+const library=`
+from js import draw_flower
+class Flower:
+    def __init__(self, petals=8, petal_shape="round", petal_colour="pink", centre_colour="gold", size=60, glitter=False, glow=False):
+        self.petals=petals
+        self.petal_shape=petal_shape
+        self.petal_colour=petal_colour
+        self.centre_colour=centre_colour
+        self.size=size
+        self.glitter=glitter
+        self.glow=glow
+    def draw(self, x=50, y=68):
+        if not isinstance(self.petals, int):
+            raise TypeError("petals must be a whole number")
+        if self.petals < 3 or self.petals > 40:
+            raise ValueError("petals should be between 3 and 40")
+        if self.petal_shape not in ["round","heart","pointed","daisy","star"]:
+            raise ValueError("petal_shape must be round, heart, pointed, daisy, or star")
+        draw_flower(self.petals,self.petal_shape,self.petal_colour,self.centre_colour,self.size,self.glitter,self.glow,x,y)
+
+
+from js import draw_butterfly
+
+class Butterfly:
+    def __init__(self, wing_colour="#b99cff", dot_colour="#ffd65c",
+                 size=55, sparkle=True):
+        self.wing_colour = wing_colour
+        self.dot_colour = dot_colour
+        self.size = size
+        self.sparkle = sparkle
+
+    def fly(self, x=50, y=40):
+        if not isinstance(self.size, (int, float)) or self.size <= 0:
+            raise ValueError("Butterfly size must be a positive number")
+        draw_butterfly({
+            "wing_colour": self.wing_colour,
+            "dot_colour": self.dot_colour,
+            "size": self.size,
+            "sparkle": self.sparkle,
+            "x": x,
+            "y": y
+        })
+
+from js import set_garden_weather, show_garden_message
+
+def set_weather(kind):
+    set_garden_weather(kind)
+
+def show_message(text):
+    show_garden_message(str(text))
+
+from js import summon_garden_fairy
+
+def summon_fairy(x, y):
+    summon_garden_fairy(x, y)
+
+from js import draw_bee_visit, draw_skip_mark
+
+def bee_visit(x, y):
+    draw_bee_visit(x, y)
+
+def mark_skipped(x, y):
+    draw_skip_mark(x, y)
+`;
+let pyodide=null;
+function hideError(){$("#error").classList.remove("show");$("#error").innerHTML=""}
+function studentLine(raw){
+ const ms=[...String(raw).matchAll(/line (\d+)/gi)]; if(!ms.length)return null;
+ let n=Number(ms.at(-1)[1]), off=library.split("\n").length, candidate=n-off, total=$("#code").value.split("\n").length;
+ if(candidate>=1&&candidate<=total)n=candidate;
+ return n>=1&&n<=total?n:null;
+}
+function friendly(raw,line){
+ let t=String(raw),l=t.toLowerCase(),title="🌱 Python found something to fix",why="Python couldn't understand one of the instructions yet.",fix="Compare this line with Luna's working code above.",example="";
+ if(l.includes("was never closed")||l.includes("unexpected eof")){title="🌸 You forgot to close your Flower( )";why="You opened <code>Flower(</code> but Python never found its matching <code>)</code>.";fix="After the last flower setting, add a closing <code>)</code>.";example="glow=True\\n)\\n\\nmy_flower.draw(x=68, y=68)"}
+ else if(l.includes("unterminated string")){title="💬 A word is missing its closing quote";why="Text such as a colour or shape needs quotes at both ends.";fix='Use something like <code>petal_shape="heart"</code>.'}
+ else if(l.includes("name 'true'")||l.includes("name 'false'")){title="✨ True and False need capital letters";why="Python treats <code>True</code> and <code>False</code> as special values.";fix="Use <code>glitter=True</code> or <code>glitter=False</code>."}
+ else if(l.includes("modulenotfounderror")&&l.includes("random")){title="🎲 Python couldn't find random";why="The random toolkit needs to be imported before you use it.";fix="Make sure you have <code>import random</code> above your meadow loop."}
+ else if(l.includes("indexerror")){title="📚 Python reached outside a list";why="The code tried to use a list position that doesn't exist.";fix="Check how many items are inside your <code>[ ]</code> list."}
+ else if(l.includes("choice")&&l.includes("empty")){title="🌼 Your choice list is empty";why="<code>random.choice()</code> needs at least one thing to choose.";fix="Put at least one quoted colour inside <code>colours = [ ... ]</code>."}
+ else if(l.includes("nameerror")){title="🏷️ Python can't find that name";why="The flower name you used doesn't exactly match one you've created.";fix="Check the spelling of the name in the highlighted line. Python names must match exactly."}
+ else if(l.includes("petals should be between")){title="🌼 Choose between 3 and 40 petals";why="Our garden draws flowers with 3–40 petals.";fix="Try <code>petals=12</code>."}
+ else if(l.includes("petal_shape must be")){title="🌺 That petal shape isn't available yet";why="The garden only knows its current set of petal shapes.";fix='Choose <code>"round"</code>, <code>"heart"</code>, <code>"pointed"</code>, <code>"daisy"</code>, or <code>"star"</code>.'}
+ else if(l.includes("expected an indented block")){title="↪️ Python needs to know WHAT to repeat";why="A <code>for</code> loop needs at least one indented instruction underneath it.";fix="Put spaces before the line you want repeated, like <code>    field_flower.draw(...)</code>."}
+ else if(l.includes("indentationerror")){title="↪️ Check the spaces at the start of this line";why="Python uses indentation as part of its grammar.";fix="The flower name and its <code>.draw()</code> line should start at the far left."}
+ else if(l.includes("syntaxerror")){title="✏️ Python can't read this line yet";why="Usually this means a missing bracket, comma, quote, or an extra character.";fix="Compare the highlighted line with Luna's code."}
+ let lineText=line?$("#code").value.split("\n")[line-1]:"";
+ return `<div class="errTitle">${title}</div>${why}${line?`<div class="errLine">LINE ${line} → ${esc(lineText)}</div>`:""}<div class="fix"><b>💡 EXACTLY WHAT TO DO:</b><br>${fix}</div>${example?`<div class="fix"><b>✅ Example:</b><pre>${esc(example)}</pre></div>`:""}<details style="margin-top:12px"><summary>🐍 Show Python's technical error</summary><pre style="white-space:pre-wrap;font-size:11px">${esc(t)}</pre></details>`;
+}
+async function run(){
+ if(!pyodide)return;
+ baseScene();hideError();badLine=null;paint();$("#status").textContent="Growing your garden…";
+ try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);$("#status").textContent="✨ Your code worked!";}
+ catch(e){let line=studentLine(e);badLine=line;paint();$("#status").textContent="🌱 Almost — there's a code problem.";$("#error").innerHTML=friendly(e,line);$("#error").classList.add("show")}
+}
+$("#run").onclick=run;
+$("#reset").onclick=()=>{$("#code").value=starter;badLine=null;hideError();paint();run()};
+
+async function boot(){
+ try{
+  pyodide=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"});
+  $("#status").textContent="Python ready 🌸";$("#run").disabled=false;await run();
+ }catch(e){
+  $("#status").textContent="🐍 Python couldn't start. Refresh once and try again.";
+  console.error(e);
+ }
+}
+boot();
+</script>
+</body></html>
