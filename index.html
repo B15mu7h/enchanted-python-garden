@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Enchanted Python Garden v1.0</title>
+<title>Enchanted Python Garden · Mission 1</title>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
 <style>
 :root{--bg:#100d20;--panel:#1c1634;--line:#ffffff20;--text:#f8f4ff;--muted:#cfc6df;--mint:#73e7bd;--pink:#ff9dce;--gold:#ffe08b}
@@ -19,7 +19,23 @@ header{max-width:1450px;margin:auto;padding:20px 24px 12px;display:flex;justify-
 #error{display:none;margin:0 16px 17px;padding:22px;border:2px solid #ff8bb6aa;border-radius:18px;background:linear-gradient(135deg,#6e204bbd,#321d57c9);font-size:16px;line-height:1.55}#error.show{display:block}.errTitle{font-size:24px;font-weight:950;margin-bottom:10px}.errLine{margin:13px 0;padding:12px;background:#0d0a19aa;border-left:4px solid #ff82af;border-radius:7px;font:14px/1.45 ui-monospace,monospace}.fix{padding:13px;background:#73e7bd16;border:1px solid #73e7bd50;border-radius:10px}.fix code,#error code{color:var(--gold)}
 .stage{height:760px;position:relative;overflow:hidden;background:linear-gradient(#17173d 0,#382757 48%,#82668a 72%,#294f43 73%)}.moon{position:absolute;width:115px;height:115px;border-radius:50%;right:9%;top:8%;background:#fff7cf;box-shadow:0 0 50px #fff0a780}.hill{position:absolute;left:-8%;right:-8%;bottom:-80px;height:280px;background:#163d35;border-radius:50% 50% 0 0/35% 35% 0 0}.label{position:absolute;bottom:20px;z-index:20;background:#100d20aa;border:1px solid var(--line);padding:7px 11px;border-radius:999px;font-size:12px}.luna{left:18%}.yours{right:16%;border-style:dashed}
 .flower{position:absolute;transform:translate(-50%,-100%);z-index:8}.stem{position:absolute;width:5px;height:120px;background:#39875f;left:50%;top:35px;transform:translateX(-50%);border-radius:8px}.headflower{position:relative;width:var(--sz);height:var(--sz);filter:drop-shadow(0 5px 7px #0004)}.petal{position:absolute;left:50%;top:50%;width:42%;height:55%;background:var(--pc);border-radius:60% 60% 48% 48%;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(var(--r)) translateY(-22%)}.petal.heart{clip-path:polygon(50% 92%,8% 45%,7% 25%,20% 9%,38% 9%,50% 22%,62% 9%,80% 9%,93% 25%,92% 45%)}.petal.pointed{clip-path:polygon(50% 0,100% 75%,50% 100%,0 75%)}.petal.star{clip-path:polygon(50% 0,62% 34%,98% 38%,70% 60%,80% 96%,50% 76%,20% 96%,30% 60%,2% 38%,38% 34%)}.centre{position:absolute;width:28%;height:28%;left:36%;top:36%;border-radius:50%;background:var(--cc);z-index:4;box-shadow:0 0 14px #fff5}.spark{position:absolute;color:#fff;font-size:12px;animation:tw 1.4s infinite alternate}@keyframes tw{to{opacity:.2;transform:scale(.65)}}.glow{filter:drop-shadow(0 0 13px var(--pc))}.stars{position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:73px 73px;opacity:.5}
-@media(max-width:950px){.app{grid-template-columns:1fr}.stage{height:620px}.editorShell{height:540px}}
+
+.learning{max-width:1450px;margin:0 auto 34px;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.learnCard{background:#171229dd;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 20px 55px #0005}
+.learnTitle{padding:18px 20px;border-bottom:1px solid var(--line);font-size:19px;font-weight:900}
+.learnBody{padding:18px 20px}
+.powerIntro{color:var(--muted);line-height:1.5;margin-bottom:15px}
+.powers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.power{padding:13px;border:1px solid var(--line);border-radius:14px;background:#ffffff08;line-height:1.35}
+.power b{display:block;color:#fff;margin-bottom:4px}.power span{font-size:13px;color:var(--muted)}
+.challenge{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line);line-height:1.45}
+.challenge:last-child{border-bottom:0}.challengeIcon{width:35px;height:35px;flex:0 0 35px;border-radius:50%;display:grid;place-items:center;background:#ffffff10}
+.challenge b{color:#fff}.challenge span{color:var(--muted);font-size:13px}
+.tip{margin-top:14px;padding:12px 14px;border-radius:13px;background:#73e7bd10;border:1px solid #73e7bd38;color:var(--muted);font-size:13px;line-height:1.45}
+.celebrate{display:none;margin:0 auto 24px;max-width:1402px;padding:16px 20px;border:1px solid #ffe08b55;border-radius:18px;background:linear-gradient(90deg,#ff8ed817,#ffe08b13);font-weight:800}
+.celebrate.show{display:block}
+@media(max-width:950px){.app{grid-template-columns:1fr}.stage{height:620px}.editorShell{height:540px}.learning{grid-template-columns:1fr}.powers{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -44,6 +60,37 @@ header{max-width:1450px;margin:auto;padding:20px 24px 12px;display:flex;justify-
  <div id="stage" class="stage"><div class="stars"></div><div class="moon"></div><div class="hill"></div><div class="label luna">🌷 Luna's flower</div><div class="label yours">✨ Your flower goes here!</div></div>
 </section>
 </main>
+
+<div id="celebrate" class="celebrate">✨ You just used real Python! Every change you make is an experiment: change the code → run it → observe what happens.</div>
+
+<section class="learning">
+ <article class="learnCard">
+  <div class="learnTitle">✨ PYTHON POWERS YOU JUST UNLOCKED</div>
+  <div class="learnBody">
+   <div class="powerIntro">You weren't just decorating a flower — Mission 1 already used real programming ideas.</div>
+   <div class="powers">
+    <div class="power"><b>🏷️ Variables</b><span><code>my_flower</code> gives your creation a name Python can remember.</span></div>
+    <div class="power"><b>⚙️ Parameters</b><span><code>petals=8</code> and <code>size=65</code> give Python specific instructions.</span></div>
+    <div class="power"><b>🔢 Numbers</b><span>Petals, size and position are controlled with numeric values.</span></div>
+    <div class="power"><b>💬 Strings</b><span>Text inside quotes, like <code>"heart"</code> and <code>"purple"</code>, is called a string.</span></div>
+    <div class="power"><b>🔘 Booleans</b><span><code>True</code> and <code>False</code> switch features like glitter and glow on or off.</span></div>
+    <div class="power"><b>📍 Coordinates</b><span><code>x</code> and <code>y</code> control where your flower is planted.</span></div>
+   </div>
+  </div>
+ </article>
+
+ <article class="learnCard">
+  <div class="learnTitle">🌸 TRY THIS! — EXPERIMENT WITH YOUR CODE</div>
+  <div class="learnBody">
+   <div class="challenge"><div class="challengeIcon">🌱</div><div><b>Easy · Change the look</b><br><span>Make your flower blue, give it 12 petals, or turn its glitter off.</span></div></div>
+   <div class="challenge"><div class="challengeIcon">🌷</div><div><b>Medium · Invent something unusual</b><br><span>Make a huge flower with 20 pointed petals and a surprising centre colour.</span></div></div>
+   <div class="challenge"><div class="challengeIcon">📍</div><div><b>Tricky · Swap places</b><br><span>Can you move your flower to Luna's side and Luna's flower to yours using only <code>x</code>?</span></div></div>
+   <div class="challenge"><div class="challengeIcon">🧠</div><div><b>Code Detective · Predict first</b><br><span>Before you run it: what do you think will happen if you change <code>glow=False</code> to <code>glow=True</code>? Make a prediction, then test it.</span></div></div>
+   <div class="tip">💡 <b>Programmer habit:</b> Change one thing at a time. Predict what will happen, press RUN, then compare the result with your prediction.</div>
+  </div>
+ </article>
+</section>
+
 <script>
 const $=q=>document.querySelector(q);
 const starter=`# ─────────────────────────────────────
@@ -107,7 +154,7 @@ function paint(){
  $("#paint").innerHTML=lines.map((l,i)=>badLine===i+1?`<span class="bad">${lex(l)||"&nbsp;"}</span>`:lex(l)).join("\n")+" ";
  $("#paint").scrollTop=$("#code").scrollTop;$("#paint").scrollLeft=$("#code").scrollLeft;
 }
-$("#code").addEventListener("input",()=>{badLine=null;hideError();paint()});
+$("#code").addEventListener("input",()=>{badLine=null;hideError();$("#celebrate").classList.remove("show");paint()});
 $("#code").addEventListener("scroll",paint);paint();
 
 function baseScene(){document.querySelectorAll(".flower").forEach(x=>x.remove())}
@@ -165,11 +212,11 @@ function friendly(raw,line){
 async function run(){
  if(!pyodide)return;
  baseScene();hideError();badLine=null;paint();$("#status").textContent="Growing your garden…";
- try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);$("#status").textContent="✨ Your code worked!"}
+ try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);$("#status").textContent="✨ Your code worked!";$("#celebrate").classList.add("show")}
  catch(e){let line=studentLine(e);badLine=line;paint();$("#status").textContent="🌱 Almost — there's a code problem.";$("#error").innerHTML=friendly(e,line);$("#error").classList.add("show")}
 }
 $("#run").onclick=run;
-$("#reset").onclick=()=>{$("#code").value=starter;badLine=null;hideError();paint();run()};
+$("#reset").onclick=()=>{$("#code").value=starter;badLine=null;hideError();$("#celebrate").classList.remove("show");paint();run()};
 
 async function boot(){
  try{
