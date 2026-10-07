@@ -40,14 +40,13 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
 @keyframes fly{from{transform:translate(-12px,5px) rotate(-8deg)}to{transform:translate(18px,-18px) rotate(9deg)}}
 .palette{position:absolute;left:18px;bottom:18px;z-index:20;background:rgba(15,12,33,.58);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:18px;padding:12px 14px;max-width:280px}.palette b{font-size:13px}.chips{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}.chip{width:23px;height:23px;border-radius:50%;border:2px solid rgba(255,255,255,.65);box-shadow:0 3px 8px #0004}
 .error{color:#ffd7e8!important}
-.errorbox{margin:0 14px 14px;padding:14px 16px;border:1px solid rgba(255,150,190,.35);background:rgba(88,25,57,.28);border-radius:16px;line-height:1.5;display:none}
-.errorbox.show{display:block}.errorbox b{color:#fff}.errorbox code{background:rgba(255,255,255,.1);padding:2px 5px;border-radius:6px;color:#fff2a8}
+
 @media(max-width:980px){.app{grid-template-columns:1fr}.stage{height:600px}.editor{height:420px}}
 </style>
 </head>
 <body>
 <header>
- <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.4</span></h1><p>Code something beautiful. ✨</p></div>
+ <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.6</span></h1><p>Code something beautiful. ✨</p></div>
  <div class="badge">🐍 Real Python • runs in your browser</div>
 </header>
 
@@ -67,7 +66,7 @@ Your job is to create a <strong style="color:#ffd7f1">second flower beside it</s
 ⑥ Press <strong>▶ RUN MY GARDEN</strong> and see what grows! ✨
 </span>
 </div>
- <div class="editorwrap"><textarea id="code" class="editor" spellcheck="false"># 🌸 MISSION 1: Make your own flower!
+ <div class="editorwrap"><div id="editorWrap"><pre id="highlight" aria-hidden="true"></pre><textarea id="code" class="editor" spellcheck="false"># 🌸 MISSION 1: Make your own flower!
 #
 # Luna's flower is already made for you.
 # FIRST: press RUN and see what Luna's flower looks like.
@@ -145,7 +144,7 @@ luna_flower.draw(x=30, y=68)
 #
 # 🌸 Can you make two completely
 #    different flowers grow together?
-</textarea></div>
+</textarea></div></div>
  <div class="actions">
   <button class="btn run" id="run" onclick="runCode()">▶ RUN MY GARDEN</button>
   <button class="btn ghost" onclick="resetCode()">↺ Reset</button>
@@ -248,71 +247,129 @@ async function boot(){
   await runCode();
  }catch(e){$("#status").textContent="Couldn’t load Python — check internet.";$("#status").classList.add("error")}
 }
+
+function escCode(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function highlightPython(src, errorLine=null){
+ return src.split("\n").map((line,i)=>{
+   // comments are deliberately processed as one block so instructions stand out
+   const hash=line.indexOf("#");
+   let code=hash>=0?line.slice(0,hash):line;
+   let comment=hash>=0?line.slice(hash):"";
+   let h=escCode(code);
+   h=h.replace(/(&quot;[^&]*?&quot;|&#039;.*?&#039;)/g,'<span class="syn-string">$1</span>');
+   h=h.replace(/\b(True|False|None)\b/g,'<span class="syn-bool">$1</span>');
+   h=h.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="syn-number">$1</span>');
+   h=h.replace(/\b(class|def|if|else|elif|for|in|while|return|import|from|as|and|or|not)\b/g,'<span class="syn-key">$1</span>');
+   h=h.replace(/\b(Flower|Butterfly)(?=\s*\()/g,'<span class="syn-call">$1</span>');
+   let rendered=h+(comment?'<span class="syn-comment">'+escCode(comment)+'</span>':"");
+   if(errorLine===i+1){
+      rendered='<span class="syn-error-line">'+(rendered || '&nbsp;')+'</span>';
+   }
+   return rendered;
+ }).join("\n")+" ";
+}
+let currentErrorLine=null;
+function syncHighlight(){
+ const code=$("#code"), hi=$("#highlight");
+ hi.innerHTML=highlightPython(code.value,currentErrorLine);
+ hi.scrollTop=code.scrollTop;hi.scrollLeft=code.scrollLeft;
+}
+function clearErrorHighlight(){
+ currentErrorLine=null;
+ syncHighlight();
+}
+function highlightErrorLine(lineNumber){
+ currentErrorLine=lineNumber;
+ syncHighlight();
+ const code=$("#code");
+ const lines=code.value.split("\n");
+ const lineHeight=parseFloat(getComputedStyle(code).lineHeight)||21.7;
+ const target=Math.max(0,(lineNumber-4)*lineHeight);
+ code.scrollTop=target;
+ $("#highlight").scrollTop=target;
+}
+$("#code").addEventListener("input",()=>{currentErrorLine=null;syncHighlight();});
+$("#code").addEventListener("scroll",syncHighlight);
+syncHighlight();
+
+function codeLineFromError(t){
+ const matches=[...String(t).matchAll(/line (\d+)/gi)];
+ if(!matches.length)return null;
+ const n=parseInt(matches[matches.length-1][1],10);
+ // library is prepended before student code, so traceback line can be offset.
+ const libLines=library.split("\n").length;
+ let student=n-libLines;
+ if(student<1 || student>$("#code").value.split("\n").length) student=n;
+ const lines=$("#code").value.split("\n");
+ return student>=1&&student<=lines.length ? {n:student,text:lines[student-1]} : null;
+}
 function friendlyError(raw){
- const t=String(raw), low=t.toLowerCase();
- let title="🌱 Your garden needs one tiny fix";
- let body="Python found something it couldn't understand. Check the highlighted idea below, make a small change, and try again.";
- let tip="Look closely at the line Python mentions.";
+ const t=String(raw), low=t.toLowerCase(), loc=codeLineFromError(t);
+ let title="🌱 Python found something to fix";
+ let why="Python couldn't understand one of the instructions yet.";
+ let fix="Compare the line with Luna's working flower and look for one small difference.";
+ let example="";
 
  if(low.includes("was never closed") || low.includes("unexpected eof") || low.includes("eof while parsing")){
-   title="🌸 Your flower isn't quite finished";
-   body="It looks like you opened something with <code>(</code> but forgot to close it with <code>)</code>.";
-   tip="After the last flower setting (for example <code>glow=True</code>), add a new line containing <code>)</code>.";
- } else if(low.includes("syntaxerror")){
-   title="✏️ Python can't quite read that line";
-   body="This is a <b>syntax error</b> — the code is shaped differently from what Python expects.";
-   tip="Check for a missing <code>)</code>, comma <code>,</code>, quote <code>\"</code>, or equals sign <code>=</code>.";
- } else if(low.includes("indentationerror") || low.includes("unexpected indent")){
-   title="↪️ The spacing is confusing Python";
-   body="Python uses indentation (spaces at the start of a line) to understand how code is grouped.";
-   tip="For this mission, <code>my_flower = Flower(</code> and <code>my_flower.draw(...)</code> should start at the far left.";
- } else if(low.includes("nameerror")){
-   title="🏷️ Python can't find that flower name";
-   body="You are trying to use a name that Python doesn't know yet.";
-   tip="Make sure the name is identical everywhere: <code>my_flower</code> must be spelled the same when you create it and plant it.";
- } else if(low.includes("flower is not defined")){
-   title="🌸 Python doesn't know what Flower means";
-   body="Use a capital <code>F</code>: <code>Flower(...)</code>. Python treats <code>Flower</code> and <code>flower</code> as different names.";
-   tip="Try <code>my_flower = Flower(</code>.";
- } else if(low.includes("unexpected keyword argument")){
-   title="🧩 That flower setting isn't recognised";
-   body="One of the setting names inside <code>Flower(...)</code> is misspelled or isn't available yet.";
-   tip="Use: <code>petals</code>, <code>petal_shape</code>, <code>petal_colour</code>, <code>centre_colour</code>, <code>size</code>, <code>glitter</code>, or <code>glow</code>.";
- } else if(low.includes("missing") && low.includes("required positional")){
-   title="🧩 Something is missing";
-   body="Python expected another piece of information before it could finish that instruction.";
-   tip="Compare your line with Luna's working flower above.";
- } else if(low.includes("petals should be between")){
-   title="🌼 That's a LOT of petals!";
-   body="For now, each flower can have between <b>3 and 40 petals</b>.";
-   tip="Try something like <code>petals=12</code>.";
- } else if(low.includes("petal_shape must be")){
-   title="🌺 Python doesn't know that petal shape yet";
-   body="Your shape must be one of the shapes our garden knows how to draw.";
-   tip='Try <code>"round"</code>, <code>"heart"</code>, <code>"pointed"</code>, <code>"daisy"</code>, or <code>"star"</code>.';
- } else if(low.includes("true") && low.includes("not defined") || low.includes("false") && low.includes("not defined")){
-   title="✨ Almost! Python cares about capital letters";
-   body="Python writes booleans as <code>True</code> and <code>False</code> with capital first letters.";
-   tip="Try <code>glitter=True</code> or <code>glitter=False</code>.";
+   title="🌸 You forgot to CLOSE your Flower( )";
+   why="You started creating a flower with <code>Flower(</code>, but Python reached the next instruction before finding the matching closing <code>)</code>.";
+   fix="Go to the end of your flower settings. After the final setting such as <code>glow=True</code>, put <code>)</code> on its own line.";
+   example="glow=True\n)\n\nmy_flower.draw(x=68, y=68)";
  } else if(low.includes("unterminated string") || low.includes("eol while scanning string")){
-   title="💬 One of your words needs another quote";
-   body="Text such as colours and shapes needs a quote at both ends.";
-   tip='Write <code>petal_shape="heart"</code>, not <code>petal_shape="heart</code>.';
+   title="💬 A word is missing its closing quote";
+   why="Python sees the first quote but cannot find where your word or colour ends.";
+   fix='Make sure text has quotes on BOTH sides.';
+   example='petal_shape="heart"\npetal_colour="hotpink"';
+ } else if(low.includes("name 'true' is not defined") || low.includes("name 'false' is not defined")){
+   title="✨ Use True or False with a CAPITAL letter";
+   why="In Python, <code>True</code> and <code>False</code> are special values. Lowercase <code>true</code> and <code>false</code> are treated like names.";
+   fix="Change the first letter to a capital.";
+   example="glitter=True\nglow=False";
+ } else if(low.includes("nameerror")){
+   const nm=(t.match(/name ['"]([^'"]+)['"] is not defined/i)||[])[1];
+   title=nm?`🏷️ Python doesn't know the name “${escapeHtml(nm)}”`:"🏷️ Python can't find that name";
+   why=nm?`You asked Python to use <code>${escapeHtml(nm)}</code>, but it hasn't seen a flower with that exact name yet.`:"The name used to plant the flower doesn't exactly match a name that was created.";
+   fix="Check spelling, underscores and capital letters. The name before <code>.draw</code> must exactly match the name before <code>= Flower(</code>.";
+   example="my_flower = Flower(\n    petals=10\n)\n\nmy_flower.draw(x=68, y=68)";
+ } else if(low.includes("unexpected keyword argument")){
+   const kw=(t.match(/unexpected keyword argument ['"]([^'"]+)['"]/i)||[])[1];
+   title=kw?`🧩 “${escapeHtml(kw)}” isn't a flower setting`:"🧩 That flower setting isn't recognised";
+   why="Python only knows the flower settings we built into this garden. This setting may be misspelled.";
+   fix="Choose from: <code>petals</code>, <code>petal_shape</code>, <code>petal_colour</code>, <code>centre_colour</code>, <code>size</code>, <code>glitter</code>, <code>glow</code>.";
+ } else if(low.includes("petals should be between")){
+   title="🌼 Choose between 3 and 40 petals";
+   why="The garden deliberately limits petal numbers so the flower still draws properly.";
+   fix="Change your petals number to anything from <b>3–40</b>.";
+   example="petals=12";
+ } else if(low.includes("petal_shape must be")){
+   title="🌺 That petal shape isn't in our garden yet";
+   why="The word you entered isn't one of the shapes the flower artist currently knows how to draw.";
+   fix='Choose exactly one of: <code>"round"</code>, <code>"heart"</code>, <code>"pointed"</code>, <code>"daisy"</code>, <code>"star"</code>.';
+   example='petal_shape="heart"';
+ } else if(low.includes("indentationerror") || low.includes("unexpected indent")){
+   title="↪️ This line has too many or too few spaces";
+   why="Python uses spaces at the beginning of lines as part of its grammar.";
+   fix="For this mission, <code>my_flower = Flower(</code> and <code>my_flower.draw(...)</code> should begin all the way at the left. Settings inside <code>Flower(...)</code> can be indented.";
+ } else if(low.includes("syntaxerror")){
+   title="✏️ Python can't read the shape of this code yet";
+   why="This is a <b>SyntaxError</b>. Usually in this mission it means a missing <code>)</code>, comma, quote, or an extra character.";
+   fix="Look at the exact line below, then compare it with Luna's working code immediately above.";
  } else if(low.includes("typeerror")){
-   title="🧩 One of the flower instructions has the wrong kind of value";
-   body="A setting may contain text where Python expected a number, or another value it can't use.";
-   tip='Numbers such as <code>petals=10</code> do not need quotes; words such as <code>petal_colour="pink"</code> do.';
+   title="🧩 This setting has the wrong kind of value";
+   why="Python understood the instruction, but one of the values isn't the kind it expected.";
+   fix='Use numbers without quotes, such as <code>petals=10</code>; words with quotes, such as <code>petal_colour="pink"</code>; and booleans as <code>True</code>/<code>False</code>.';
  }
 
- const line=t.match(/line (\d+)/i);
- const where=line ? `<br><br><b>🔎 Look around line ${line[1]} in your code.</b>` : "";
- return `<b>${title}</b><br>${body}<br><br>💡 <b>Try this:</b> ${tip}${where}<details style="margin-top:10px"><summary style="cursor:pointer;color:#cfc5e8">Show Python's original error</summary><pre style="white-space:pre-wrap;font-size:11px;color:#cfc5e8">${escapeHtml(t)}</pre></details>`;
+ const lineBlock=loc?`<div class="error-line">LINE ${loc.n} → ${escapeHtml(loc.text||"(blank line)")}</div>`:"";
+ const exampleBlock=example?`<div class="error-fix"><b>✅ It should look like this:</b><pre style="white-space:pre-wrap;margin:8px 0 0">${escapeHtml(example)}</pre></div>`:"";
+ return `<span class="error-title">${title}</span>${why}${lineBlock}<div class="error-fix"><b>💡 EXACTLY WHAT TO DO:</b><br>${fix}</div>${exampleBlock}<details style="margin-top:14px"><summary style="cursor:pointer;color:#cfc5e8">🐍 Show Python's original technical error</summary><pre style="white-space:pre-wrap;font-size:11px;color:#cfc5e8">${escapeHtml(t)}</pre></details>`;
 }
 function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));}
 
 async function runCode(){
  if(!pyodide)return;
  baseScene();
+ clearErrorHighlight();
  const st=$("#status"), box=$("#errorbox");
  box.classList.remove("show"); box.innerHTML="";
  st.classList.remove("error");st.textContent="Growing your garden…";
@@ -322,8 +379,11 @@ async function runCode(){
  } catch(e){
    st.classList.add("error");
    st.textContent="🌱 Almost! There's a tiny code problem.";
+   const loc=codeLineFromError(String(e));
+   if(loc) highlightErrorLine(loc.n);
    box.innerHTML=friendlyError(e);
    box.classList.add("show");
+   box.scrollIntoView({behavior:"smooth",block:"nearest"});
  }
 }
 $("#run").disabled=true;boot();
