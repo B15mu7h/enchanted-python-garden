@@ -209,7 +209,7 @@ window.draw_flower=(petals,shape,pc,cc,size,glitter,glow,x,y)=>{
 
 
 window.draw_butterfly=(o)=>{
- const g=$("#garden"), b=document.createElement("div");
+ const g=document.getElementById("garden"), b=document.createElement("div");
  b.className="butterfly";
  b.style.left=o.x+"%"; b.style.top=o.y+"%";
  b.style.setProperty("--wing",o.wing_colour);
