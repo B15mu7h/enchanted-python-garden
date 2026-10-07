@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Enchanted Python Garden v0.2</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+<style>
+:root{--ink:#f9f4ff;--muted:#cfc3e9;--glass:rgba(27,18,54,.72);--line:rgba(255,255,255,.14);--pink:#ff8ed8;--lav:#b89cff}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;color:var(--ink);font-family:Inter,ui-rounded,"SF Pro Rounded",system-ui,sans-serif;background:radial-gradient(circle at 15% 10%,#5b3977 0,transparent 28%),radial-gradient(circle at 85% 15%,#243c78 0,transparent 30%),linear-gradient(145deg,#110d25,#241641 55%,#0c1930);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:46px 46px;opacity:.08}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px;max-width:1500px;margin:auto}
+.brand h1{margin:0;font-size:clamp(26px,4vw,44px);letter-spacing:-1.5px}.brand p{margin:5px 0 0;color:var(--muted)}
+.badge{padding:9px 14px;border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:999px;font-size:13px}
+.app{max-width:1500px;margin:auto;padding:0 24px 28px;display:grid;grid-template-columns:minmax(390px,.9fr) minmax(480px,1.25fr);gap:18px}
+.card{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(18px);border-radius:26px;box-shadow:0 22px 60px rgba(0,0,0,.28);overflow:hidden}
+.cardhead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}.cardhead strong{font-size:15px}.dots{display:flex;gap:6px}.dot{width:9px;height:9px;border-radius:50%;background:#ff8ed8}.dot:nth-child(2){background:#ffd36e}.dot:nth-child(3){background:#83e2bb}
+.lesson{padding:16px 18px;background:linear-gradient(90deg,rgba(255,142,216,.13),rgba(184,156,255,.09));border-bottom:1px solid var(--line)}
+.lesson b{color:#ffd7f1}.lesson span{color:var(--muted);font-size:13px}
+.editorwrap{position:relative;padding:14px}.editor{width:100%;height:515px;border:0;outline:0;resize:vertical;border-radius:18px;background:#100d20;color:#f5eaff;padding:18px;font:14px/1.65 "SFMono-Regular",Consolas,monospace;tab-size:4;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.editor::selection{background:#7d5e9f}
+.actions{display:flex;gap:9px;align-items:center;padding:0 14px 14px}.btn{border:0;border-radius:999px;padding:12px 17px;font-weight:800;cursor:pointer}.run{background:linear-gradient(100deg,#ff89d2,#c29cff);color:#24132d;box-shadow:0 8px 24px rgba(255,137,210,.2)}.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line)}
+.status{margin-left:auto;color:var(--muted);font-size:12px;text-align:right;max-width:210px}
+.stage{position:relative;height:650px;overflow:hidden;background:linear-gradient(#15173c 0%,#493b79 42%,#c78ab8 69%,#426d63 70%,#163e39 100%)}
+.skyglow{position:absolute;width:430px;height:430px;border-radius:50%;right:-80px;top:-180px;background:radial-gradient(circle,rgba(255,235,196,.58),rgba(255,190,224,.16) 38%,transparent 67%);filter:blur(2px)}
+.moon{position:absolute;right:10%;top:8%;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#fff2c7 45%,#eac6ef);box-shadow:0 0 45px #ffe8ceaa,0 0 90px #e6c2ff66}
+.hill{position:absolute;left:-10%;right:-10%;bottom:-8%;height:39%;background:radial-gradient(ellipse at 50% 0%,#4d8469,#1a473e 65%);border-radius:50% 50% 0 0/28% 28% 0 0}
+.star{position:absolute;color:white;text-shadow:0 0 8px white;animation:twinkle var(--dur) ease-in-out infinite alternate;opacity:.8}
+@keyframes twinkle{from{opacity:.18;transform:scale(.55) rotate(0)}to{opacity:1;transform:scale(1.25) rotate(25deg)}}
+.flower{position:absolute;z-index:5;filter:drop-shadow(0 10px 10px rgba(0,0,0,.18));animation:sway 3.7s ease-in-out infinite alternate;transform-origin:50% 100%}
+@keyframes sway{from{transform:rotate(-1.8deg)}to{transform:rotate(1.8deg)}}
+.stem{position:absolute;left:50%;top:0;transform:translateX(-50%);width:7px;border-radius:10px;background:linear-gradient(90deg,#28563b,#72bd73,#356e4b);z-index:1}
+.leaf{position:absolute;width:30px;height:16px;background:linear-gradient(135deg,#80cf80,#2f7d55);border-radius:100% 0 100% 0;z-index:2}
+.petal{position:absolute;left:50%;top:50%;transform-origin:50% 100%;z-index:3;box-shadow:inset 0 0 16px rgba(255,255,255,.35),0 0 9px rgba(255,255,255,.16)}
+.petal.round{border-radius:55% 55% 48% 48%}.petal.pointed{clip-path:polygon(50% 0,94% 42%,72% 100%,28% 100%,6% 42%);border-radius:48%}.petal.heart{clip-path:path("M 50 90 C 15 62 0 42 7 22 C 14 2 39 1 50 18 C 61 1 86 2 93 22 C 100 42 85 62 50 90 Z")}
+.petal.daisy{border-radius:50% 50% 42% 42%}.petal.star{clip-path:polygon(50% 0,62% 34%,98% 35%,69% 56%,79% 92%,50% 70%,21% 92%,31% 56%,2% 35%,38% 34%)}
+.centre{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;z-index:6;box-shadow:inset 0 0 10px rgba(255,255,255,.55),0 0 16px rgba(255,220,100,.38)}
+.spark{position:absolute;z-index:10;pointer-events:none;color:#fff;text-shadow:0 0 8px #fff,0 0 15px #ffd6f4;animation:twinkle var(--dur) infinite alternate}
+.butterfly{position:absolute;z-index:12;font-size:28px;filter:drop-shadow(0 0 8px #ffd4f0);animation:fly var(--dur) ease-in-out infinite alternate}
+@keyframes fly{from{transform:translate(-12px,5px) rotate(-8deg)}to{transform:translate(18px,-18px) rotate(9deg)}}
+.palette{position:absolute;left:18px;bottom:18px;z-index:20;background:rgba(15,12,33,.58);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:18px;padding:12px 14px;max-width:280px}.palette b{font-size:13px}.chips{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}.chip{width:23px;height:23px;border-radius:50%;border:2px solid rgba(255,255,255,.65);box-shadow:0 3px 8px #0004}
+.error{color:#ffb5cf!important}
+@media(max-width:980px){.app{grid-template-columns:1fr}.stage{height:600px}.editor{height:420px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.2</span></h1><p>Code something beautiful. ✨</p></div>
+ <div class="badge">🐍 Real Python • runs in your browser</div>
+</header>
+
+<main class="app">
+<section class="card">
+ <div class="cardhead"><strong>✨ YOUR PYTHON</strong><div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div></div>
+ <div class="lesson"><b>MISSION 1 · Invent a flower</b><br><span>Try changing its petals, shape, colours, size and glitter — then press Run.</span></div>
+ <div class="editorwrap"><textarea id="code" class="editor" spellcheck="false"># ✨ Welcome to your Enchanted Garden!
+# Change anything you like, then press RUN.
+
+moon_blossom = Flower(
+    petals=10,
+    petal_shape="heart",
+    petal_colour="#ff86d3",
+    centre_colour="#ffd65c",
+    size=72,
+    glitter=True,
+    glow=True
+)
+
+moon_blossom.draw(x=28, y=68)
+
+
+starlight = Flower(
+    petals=14,
+    petal_shape="pointed",
+    petal_colour="#bca7ff",
+    centre_colour="#fff2a8",
+    size=58,
+    glitter=True
+)
+
+starlight.draw(x=52, y=73)
+
+
+bluebell = Flower(
+    petals=7,
+    petal_shape="round",
+    petal_colour="#83d8ff",
+    centre_colour="#ffb7e6",
+    size=52,
+    glitter=False
+)
+
+bluebell.draw(x=75, y=66)
+
+Butterfly(x=62, y=30, colour="💜")
+Butterfly(x=82, y=42, colour="🩷")</textarea></div>
+ <div class="actions">
+  <button class="btn run" id="run" onclick="runCode()">▶ RUN MY GARDEN</button>
+  <button class="btn ghost" onclick="resetCode()">↺ Reset</button>
+  <button class="btn ghost" onclick="clearGarden()">Clear</button>
+  <div class="status" id="status">Python is waking up… ✨</div>
+ </div>
+</section>
+
+<section class="card">
+ <div class="cardhead"><strong>🌷 YOUR GARDEN</strong><span style="font-size:12px;color:var(--muted)">every run can be different</span></div>
+ <div id="garden" class="stage">
+  <div class="skyglow"></div><div class="moon"></div><div class="hill"></div>
+  <div class="palette"><b>Try these colours in your code</b><div class="chips">
+   <i class="chip" style="background:#ff86d3" title="#ff86d3"></i><i class="chip" style="background:#bca7ff" title="#bca7ff"></i><i class="chip" style="background:#83d8ff" title="#83d8ff"></i><i class="chip" style="background:#ffb7e6" title="#ffb7e6"></i><i class="chip" style="background:#fff2a8" title="#fff2a8"></i><i class="chip" style="background:#8de5b4" title="#8de5b4"></i>
+  </div></div>
+ </div>
+</section>
+</main>
+
+<script>
+let pyodide, originalCode;
+const $=s=>document.querySelector(s);
+originalCode=$("#code").value;
+
+function baseScene(){
+ const g=$("#garden");
+ g.querySelectorAll(".flower,.spark,.butterfly,.star").forEach(e=>e.remove());
+ for(let i=0;i<42;i++){
+  const s=document.createElement("span");s.className="star";s.textContent=Math.random()>.72?"✦":"·";
+  s.style.left=(3+Math.random()*94)+"%";s.style.top=(3+Math.random()*53)+"%";s.style.fontSize=(8+Math.random()*11)+"px";s.style.setProperty("--dur",(1.2+Math.random()*2.8)+"s");g.appendChild(s)
+ }
+}
+baseScene();
+
+window.clearGarden=()=>{baseScene();$("#status").textContent="Fresh garden ready 🌱"};
+window.resetCode=()=>{$("#code").value=originalCode;runCode()};
+
+window.draw_flower=(x,y,petals,shape,petalColour,centreColour,size,glitter,glow)=>{
+ const g=$("#garden"), f=document.createElement("div");f.className="flower";f.style.left=x+"%";f.style.top=y+"%";
+ const stem=document.createElement("div");stem.className="stem";stem.style.height=size*2.15+"px";f.appendChild(stem);
+ for(let k=0;k<2;k++){const l=document.createElement("i");l.className="leaf";l.style.top=(size*(.85+k*.55))+"px";l.style.left=k?"48%":"8%";l.style.transform=k?"rotate(35deg)":"rotate(-35deg) scaleX(-1)";f.appendChild(l)}
+ for(let i=0;i<petals;i++){
+  const p=document.createElement("i");p.className="petal "+shape;
+  let w=size*.62,h=size;
+  if(shape==="daisy"){w=size*.34;h=size*1.05}
+  if(shape==="pointed"){w=size*.58;h=size*1.08}
+  if(shape==="star"){w=size*.72;h=size*.9}
+  p.style.width=w+"px";p.style.height=h+"px";p.style.marginLeft=-w/2+"px";p.style.marginTop=-h+"px";
+  p.style.background=`linear-gradient(to bottom,rgba(255,255,255,.58),${petalColour} 34%,${petalColour} 82%,rgba(80,25,80,.35))`;
+  p.style.transform=`rotate(${i*(360/petals)}deg)`;
+  if(glow)p.style.filter=`drop-shadow(0 0 ${Math.max(5,size*.12)}px ${petalColour})`;
+  f.appendChild(p)
+ }
+ const c=document.createElement("i");c.className="centre";c.style.width=size*.48+"px";c.style.height=size*.48+"px";c.style.background=`radial-gradient(circle at 32% 28%,white,${centreColour} 35%,${centreColour} 70%,#8d6c3b)`;f.appendChild(c);
+ if(glitter){for(let i=0;i<20;i++){const sp=document.createElement("span");sp.className="spark";sp.textContent=Math.random()>.5?"✦":"✧";sp.style.left=(Math.random()*size*2-size)+"px";sp.style.top=(Math.random()*size*1.8-size)+"px";sp.style.fontSize=(7+Math.random()*10)+"px";sp.style.setProperty("--dur",(1+Math.random()*2)+"s");f.appendChild(sp)}}
+ g.appendChild(f)
+};
+
+window.draw_butterfly=(x,y,colour)=>{
+ const b=document.createElement("div");b.className="butterfly";b.style.left=x+"%";b.style.top=y+"%";b.style.setProperty("--dur",(2.2+Math.random()*2)+"s");b.textContent=(colour==="💜"||colour==="🩷"||colour==="💙")?colour+"🦋":"🦋";$("#garden").appendChild(b)
+};
+
+const library=`
+from js import draw_flower, draw_butterfly
+
+class Flower:
+    """A flower you can design with Python."""
+    def __init__(self, petals=8, petal_shape="round",
+                 petal_colour="#ff86d3", centre_colour="#ffd65c",
+                 size=60, glitter=False, glow=False):
+        self.petals = petals
+        self.petal_shape = petal_shape
+        self.petal_colour = petal_colour
+        self.centre_colour = centre_colour
+        self.size = size
+        self.glitter = glitter
+        self.glow = glow
+
+    def draw(self, x=50, y=65):
+        if self.petals < 3 or self.petals > 40:
+            raise ValueError("petals should be between 3 and 40 🌸")
+        if self.petal_shape not in ["round","pointed","daisy","star","heart"]:
+            raise ValueError('petal_shape can be "round", "pointed", "daisy", "star", or "heart"')
+        draw_flower(x, y, self.petals, self.petal_shape,
+                    self.petal_colour, self.centre_colour,
+                    self.size, self.glitter, self.glow)
+
+class Butterfly:
+    def __init__(self, x=50, y=30, colour="💜"):
+        draw_butterfly(x, y, colour)
+`;
+
+async function boot(){
+ try{
+  pyodide=await loadPyodide();
+  $("#status").textContent="Python ready 🌸";
+  $("#run").disabled=false;
+  await runCode();
+ }catch(e){$("#status").textContent="Couldn’t load Python — check internet.";$("#status").classList.add("error")}
+}
+async function runCode(){
+ if(!pyodide)return;
+ baseScene();const st=$("#status");st.classList.remove("error");st.textContent="Growing your garden…";
+ try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);st.textContent="✨ Your code worked!";}
+ catch(e){st.classList.add("error");let m=String(e).split("\n").slice(-2).join(" ");st.textContent="🌱 "+m}
+}
+$("#run").disabled=true;boot();
+</script>
+</body>
+</html>
