@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enchanted Python Garden · Mission 2</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+<style>
+:root{--bg:#100d20;--panel:#1c1634;--line:#ffffff20;--text:#f8f4ff;--muted:#cfc6df;--mint:#73e7bd;--pink:#ff9dce;--gold:#ffe08b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 75% 15%,#43265f 0,#17112c 38%,#0d0a19 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
+header{max-width:1450px;margin:auto;padding:20px 24px 12px;display:flex;justify-content:space-between;align-items:center}.brand{font-size:clamp(24px,4vw,42px);font-weight:900}.badge{border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--muted)}
+.app{max-width:1450px;margin:auto;padding:10px 24px 28px;display:grid;grid-template-columns:minmax(400px,.95fr) minmax(480px,1.05fr);gap:22px}.card{background:#171229dd;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 20px 55px #0006}.head{padding:15px 18px;border-bottom:1px solid var(--line);font-weight:850}
+.mission{padding:17px 19px;background:linear-gradient(90deg,#ff8ed821,#b99cff19);line-height:1.55;color:var(--muted)}.mission strong{color:#fff}.mission code{background:#ffffff12;color:var(--gold);padding:2px 6px;border-radius:6px}
+.editorShell{position:relative;height:570px;background:var(--bg);overflow:hidden}
+#paint,#code{position:absolute;inset:0;width:100%;height:100%;padding:20px;margin:0;border:0;overflow:auto;white-space:pre-wrap;overflow-wrap:normal;font:15px/1.62 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:400;font-style:normal;letter-spacing:0;tab-size:4}
+#paint{pointer-events:none;color:#f8f4ff;background:var(--bg)}#code{resize:none;outline:0;background:transparent;color:transparent;-webkit-text-fill-color:transparent;caret-color:#fff}#code::selection{background:#a98aff55}
+.c{color:var(--mint)}.s{color:#ffd884}.n{color:#8fdcff}.b{color:#ff9ed1}.k{color:#c7adff}.f{color:#ffb8e2}.bad{background:#ff4e8738;box-shadow:inset 4px 0 #ff709f}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-top:1px solid var(--line)}button{border:0;border-radius:12px;padding:11px 16px;font-weight:850;cursor:pointer}.run{background:linear-gradient(135deg,#ff8ed8,#b89cff);color:#20132e}.ghost{background:#ffffff10;color:#eee;border:1px solid var(--line)}button:disabled{opacity:.45}.status{margin-left:auto;color:var(--muted);font-size:13px}
+#error{display:none;margin:0 16px 17px;padding:22px;border:2px solid #ff8bb6aa;border-radius:18px;background:linear-gradient(135deg,#6e204bbd,#321d57c9);font-size:16px;line-height:1.55}#error.show{display:block}.errTitle{font-size:24px;font-weight:950;margin-bottom:10px}.errLine{margin:13px 0;padding:12px;background:#0d0a19aa;border-left:4px solid #ff82af;border-radius:7px;font:14px/1.45 ui-monospace,monospace}.fix{padding:13px;background:#73e7bd16;border:1px solid #73e7bd50;border-radius:10px}.fix code,#error code{color:var(--gold)}
+.stage{height:760px;position:relative;overflow:hidden;background:linear-gradient(#17173d 0,#382757 48%,#82668a 72%,#294f43 73%)}.moon{position:absolute;width:115px;height:115px;border-radius:50%;right:9%;top:8%;background:#fff7cf;box-shadow:0 0 50px #fff0a780}.hill{position:absolute;left:-8%;right:-8%;bottom:-80px;height:280px;background:#163d35;border-radius:50% 50% 0 0/35% 35% 0 0}.label{position:absolute;bottom:20px;z-index:20;background:#100d20aa;border:1px solid var(--line);padding:7px 11px;border-radius:999px;font-size:12px}.luna{left:18%}.yours{right:16%;border-style:dashed}
+.flower{position:absolute;transform:translate(-50%,-100%);z-index:8}.stem{position:absolute;width:5px;height:120px;background:#39875f;left:50%;top:35px;transform:translateX(-50%);border-radius:8px}.headflower{position:relative;width:var(--sz);height:var(--sz);filter:drop-shadow(0 5px 7px #0004)}.petal{position:absolute;left:50%;top:50%;width:42%;height:55%;background:var(--pc);border-radius:60% 60% 48% 48%;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(var(--r)) translateY(-22%)}.petal.heart{clip-path:polygon(50% 92%,8% 45%,7% 25%,20% 9%,38% 9%,50% 22%,62% 9%,80% 9%,93% 25%,92% 45%)}.petal.pointed{clip-path:polygon(50% 0,100% 75%,50% 100%,0 75%)}.petal.star{clip-path:polygon(50% 0,62% 34%,98% 38%,70% 60%,80% 96%,50% 76%,20% 96%,30% 60%,2% 38%,38% 34%)}.centre{position:absolute;width:28%;height:28%;left:36%;top:36%;border-radius:50%;background:var(--cc);z-index:4;box-shadow:0 0 14px #fff5}.spark{position:absolute;color:#fff;font-size:12px;animation:tw 1.4s infinite alternate}@keyframes tw{to{opacity:.2;transform:scale(.65)}}.glow{filter:drop-shadow(0 0 13px var(--pc))}.stars{position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:73px 73px;opacity:.5}
+
+.learning{max-width:1450px;margin:0 auto 34px;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.learnCard{background:#171229dd;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 20px 55px #0005}
+.learnTitle{padding:18px 20px;border-bottom:1px solid var(--line);font-size:19px;font-weight:900}
+.learnBody{padding:18px 20px}
+.powerIntro{color:var(--muted);line-height:1.5;margin-bottom:15px}
+.powers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.power{padding:13px;border:1px solid var(--line);border-radius:14px;background:#ffffff08;line-height:1.35}
+.power b{display:block;color:#fff;margin-bottom:4px}.power span{font-size:13px;color:var(--muted)}
+.challenge{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line);line-height:1.45}
+.challenge:last-child{border-bottom:0}.challengeIcon{width:35px;height:35px;flex:0 0 35px;border-radius:50%;display:grid;place-items:center;background:#ffffff10}
+.challenge b{color:#fff}.challenge span{color:var(--muted);font-size:13px}
+.tip{margin-top:14px;padding:12px 14px;border-radius:13px;background:#73e7bd10;border:1px solid #73e7bd38;color:var(--muted);font-size:13px;line-height:1.45}
+.celebrate{display:none;margin:0 auto 24px;max-width:1402px;padding:16px 20px;border:1px solid #ffe08b55;border-radius:18px;background:linear-gradient(90deg,#ff8ed817,#ffe08b13);font-weight:800}
+.celebrate.show{display:block}
+@media(max-width:950px){.app{grid-template-columns:1fr}.stage{height:620px}.editorShell{height:540px}.learning{grid-template-columns:1fr}.powers{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<header><div class="brand">🌸 ENCHANTED PYTHON GARDEN 🌸</div><div class="badge">MISSION 2 · FOR LOOPS</div></header>
+<main class="app">
+<section class="card">
+ <div class="head">✨ LEARN PYTHON BY GROWING A GARDEN</div>
+ <div class="mission"><strong>🌷 MISSION 2: Plant a whole flower field!</strong><br><br>
+  ① You already know how to create <strong>one</strong> flower.<br>
+  ② Today we're teaching Python to <strong>REPEAT</strong> an instruction for us.<br>
+  ③ <code>for flower_number in range(10):</code> means <strong>REPEAT 10 TIMES</strong>.<br>
+  ④ The indented line underneath is <strong>WHAT PYTHON REPEATS</strong>.<br>
+  ⑤ <code>flower_number</code> changes each time: 0, 1, 2, 3… so we can use it to move each flower across the garden.<br>
+  ⑥ Press <strong>▶ RUN MY GARDEN</strong> and watch one flower become a field! ✨
+ </div>
+ <div class="editorShell"><pre id="paint" aria-hidden="true"></pre><textarea id="code" spellcheck="false"></textarea></div>
+ <div class="actions"><button id="run" class="run" disabled>▶ RUN MY GARDEN</button><button id="reset" class="ghost">Reset</button><div id="status" class="status">Python is waking up… ✨</div></div>
+ <div id="error" role="alert" aria-live="polite"></div>
+</section>
+<section class="card">
+ <div class="head">🌷 YOUR GARDEN</div>
+ <div id="stage" class="stage"><div class="stars"></div><div class="moon"></div><div class="hill"></div><div class="label luna">🌱 START</div><div class="label yours">✨ KEEP GROWING →</div></div>
+</section>
+</main>
+
+<section class="learning">
+ <article class="learnCard">
+  <div class="learnTitle">✨ NEW PYTHON POWER: FOR LOOPS</div>
+  <div class="learnBody">
+   <div class="powerIntro">A loop lets you tell Python to repeat work instead of writing the same instruction again and again.</div>
+   <div class="powers">
+    <div class="power"><b>🔁 <code>for</code></b><span>Think: <strong>REPEAT</strong>. It starts a loop.</span></div>
+    <div class="power"><b>🔢 <code>range(10)</code></b><span>Creates 10 turns: 0 through 9.</span></div>
+    <div class="power"><b>🏷️ <code>flower_number</code></b><span>A variable that changes on every turn of the loop.</span></div>
+    <div class="power"><b>↪️ Indentation</b><span>The spaces at the start tell Python which instructions belong inside the loop.</span></div>
+    <div class="power"><b>➕ Maths in code</b><span><code>10 + flower_number * 9</code> calculates a new x-position every time.</span></div>
+    <div class="power"><b>📍 Repeated coordinates</b><span>One flower design can be planted in many different places.</span></div>
+   </div>
+  </div>
+ </article>
+ <article class="learnCard">
+  <div class="learnTitle">🌷 TRY THIS! — BECOME THE GARDEN DESIGNER</div>
+  <div class="learnBody">
+   <div class="challenge"><div class="challengeIcon">🌱</div><div><b>Easy · Change how many grow</b><br><span>Change <code>range(10)</code> to <code>range(5)</code>. Predict how many flowers you'll see before you press RUN.</span></div></div>
+   <div class="challenge"><div class="challengeIcon">🌸</div><div><b>Medium · Grow a huge field</b><br><span>Try <code>range(15)</code>. Then change the <code>9</code> in the x-position. Can you stop the flowers bunching together?</span></div></div>
+   <div class="challenge"><div class="challengeIcon">📍</div><div><b>Tricky · Make a diagonal garden</b><br><span>Right now <code>y=70</code> never changes. Can you use <code>flower_number</code> in the y-position too?</span></div></div>
+   <div class="challenge"><div class="challengeIcon">🧠</div><div><b>Code Detective · Why does it start at zero?</b><br><span>With <code>range(10)</code>, <code>flower_number</code> goes from 0 to 9. That's still exactly 10 turns. Count them!</span></div></div>
+   <div class="tip">💡 <b>Programmer habit:</b> Loops are useful whenever you catch yourself thinking, “I need to do this same thing again.”</div>
+  </div>
+ </article>
+</section>
+
+<script>
+const $=q=>document.querySelector(q);
+const starter=`# ─────────────────────────────────────
+# 🌷 MISSION 2 — PLANT A FLOWER FIELD!
+# ─────────────────────────────────────
+#
+# First, CREATE ONE flower design.
+# You already know this part from Mission 1.
+
+field_flower = Flower(
+    petals=8,
+    petal_shape="heart",
+    petal_colour="#ff86d3",
+    centre_colour="#ffd65c",
+    size=58,
+    glitter=True,
+    glow=True
+)
+
+
+# ─────────────────────────────────────
+# 🔁 NEW PYTHON POWER: A FOR LOOP
+# ─────────────────────────────────────
+#
+# for = REPEAT
+# range(10) = 10 TIMES
+#
+# flower_number starts at 0, then becomes
+# 1, 2, 3, 4 ... all the way to 9.
+
+for flower_number in range(10):
+
+    # ↪️ This line is INDENTED.
+    # That tells Python: REPEAT THIS LINE.
+    #
+    # Each time the loop runs, flower_number
+    # gets bigger — so x moves the next flower
+    # farther across the garden.
+
+    field_flower.draw(
+        x=10 + flower_number * 9,
+        y=70
+    )
+
+
+# 🌸 TRY IT!
+# Change range(10) to range(5).
+# Run it. What changed?
+#
+# Then try range(15)!
+`;
+$("#code").value=starter;
+
+function esc(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function lex(line){
+ let o="",i=0,keys=new Set(["class","def","if","else","elif","for","in","while","return","import","from","as","and","or","not"]), bools=new Set(["True","False","None"]);
+ while(i<line.length){
+  let ch=line[i];
+  if(ch==="#"){o+='<span class="c">'+esc(line.slice(i))+'</span>';break}
+  if(ch==='"'||ch==="'"){let q=ch,j=i+1,e=false;while(j<line.length){let z=line[j];if(!e&&z===q){j++;break}if(!e&&z==="\\")e=true;else e=false;j++}o+='<span class="s">'+esc(line.slice(i,j))+'</span>';i=j;continue}
+  if(/[0-9]/.test(ch)){let j=i+1;while(j<line.length&&/[0-9.]/.test(line[j]))j++;o+='<span class="n">'+esc(line.slice(i,j))+'</span>';i=j;continue}
+  if(/[A-Za-z_]/.test(ch)){let j=i+1;while(j<line.length&&/[A-Za-z0-9_]/.test(line[j]))j++;let w=line.slice(i,j),cl=bools.has(w)?"b":keys.has(w)?"k":(w==="Flower"?"f":"");o+=cl?`<span class="${cl}">${w}</span>`:w;i=j;continue}
+  o+=esc(ch);i++;
+ }return o
+}
+let badLine=null;
+function paint(){
+ let lines=$("#code").value.split("\n");
+ $("#paint").innerHTML=lines.map((l,i)=>badLine===i+1?`<span class="bad">${lex(l)||"&nbsp;"}</span>`:lex(l)).join("\n")+" ";
+ $("#paint").scrollTop=$("#code").scrollTop;$("#paint").scrollLeft=$("#code").scrollLeft;
+}
+$("#code").addEventListener("input",()=>{badLine=null;hideError();paint()});
+$("#code").addEventListener("scroll",paint);paint();
+
+function baseScene(){document.querySelectorAll(".flower").forEach(x=>x.remove())}
+window.draw_flower=(petals,shape,pc,cc,size,glitter,glow,x,y)=>{
+ const wrap=document.createElement("div");wrap.className="flower";wrap.style.left=x+"%";wrap.style.top=y+"%";
+ const stem=document.createElement("div");stem.className="stem";wrap.appendChild(stem);
+ const h=document.createElement("div");h.className="headflower"+(glow?" glow":"");h.style.setProperty("--sz",size+"px");h.style.setProperty("--pc",pc);h.style.setProperty("--cc",cc);
+ for(let i=0;i<petals;i++){let p=document.createElement("div");p.className="petal "+shape;p.style.setProperty("--r",(360/petals*i)+"deg");h.appendChild(p)}
+ let c=document.createElement("div");c.className="centre";h.appendChild(c);
+ if(glitter)for(let i=0;i<5;i++){let q=document.createElement("span");q.className="spark";q.textContent="✦";q.style.left=(10+Math.random()*80)+"%";q.style.top=(5+Math.random()*80)+"%";q.style.animationDelay=(Math.random())+"s";h.appendChild(q)}
+ wrap.appendChild(h);$("#stage").appendChild(wrap);
+};
+
+const library=`
+from js import draw_flower
+class Flower:
+    def __init__(self, petals=8, petal_shape="round", petal_colour="pink", centre_colour="gold", size=60, glitter=False, glow=False):
+        self.petals=petals
+        self.petal_shape=petal_shape
+        self.petal_colour=petal_colour
+        self.centre_colour=centre_colour
+        self.size=size
+        self.glitter=glitter
+        self.glow=glow
+    def draw(self, x=50, y=68):
+        if not isinstance(self.petals, int):
+            raise TypeError("petals must be a whole number")
+        if self.petals < 3 or self.petals > 40:
+            raise ValueError("petals should be between 3 and 40")
+        if self.petal_shape not in ["round","heart","pointed","daisy","star"]:
+            raise ValueError("petal_shape must be round, heart, pointed, daisy, or star")
+        draw_flower(self.petals,self.petal_shape,self.petal_colour,self.centre_colour,self.size,self.glitter,self.glow,x,y)
+`;
+let pyodide=null;
+function hideError(){$("#error").classList.remove("show");$("#error").innerHTML=""}
+function studentLine(raw){
+ const ms=[...String(raw).matchAll(/line (\d+)/gi)]; if(!ms.length)return null;
+ let n=Number(ms.at(-1)[1]), off=library.split("\n").length, candidate=n-off, total=$("#code").value.split("\n").length;
+ if(candidate>=1&&candidate<=total)n=candidate;
+ return n>=1&&n<=total?n:null;
+}
+function friendly(raw,line){
+ let t=String(raw),l=t.toLowerCase(),title="🌱 Python found something to fix",why="Python couldn't understand one of the instructions yet.",fix="Compare this line with Luna's working code above.",example="";
+ if(l.includes("was never closed")||l.includes("unexpected eof")){title="🌸 You forgot to close your Flower( )";why="You opened <code>Flower(</code> but Python never found its matching <code>)</code>.";fix="After the last flower setting, add a closing <code>)</code>.";example="glow=True\\n)\\n\\nmy_flower.draw(x=68, y=68)"}
+ else if(l.includes("unterminated string")){title="💬 A word is missing its closing quote";why="Text such as a colour or shape needs quotes at both ends.";fix='Use something like <code>petal_shape="heart"</code>.'}
+ else if(l.includes("name 'true'")||l.includes("name 'false'")){title="✨ True and False need capital letters";why="Python treats <code>True</code> and <code>False</code> as special values.";fix="Use <code>glitter=True</code> or <code>glitter=False</code>."}
+ else if(l.includes("nameerror")){title="🏷️ Python can't find that name";why="The flower name you used doesn't exactly match one you've created.";fix="Check the spelling of the name in the highlighted line. Python names must match exactly."}
+ else if(l.includes("petals should be between")){title="🌼 Choose between 3 and 40 petals";why="Our garden draws flowers with 3–40 petals.";fix="Try <code>petals=12</code>."}
+ else if(l.includes("petal_shape must be")){title="🌺 That petal shape isn't available yet";why="The garden only knows its current set of petal shapes.";fix='Choose <code>"round"</code>, <code>"heart"</code>, <code>"pointed"</code>, <code>"daisy"</code>, or <code>"star"</code>.'}
+ else if(l.includes("expected an indented block")){title="↪️ Python needs to know WHAT to repeat";why="A <code>for</code> loop needs at least one indented instruction underneath it.";fix="Put spaces before the line you want repeated, like <code>    field_flower.draw(...)</code>."}
+ else if(l.includes("indentationerror")){title="↪️ Check the spaces at the start of this line";why="Python uses indentation as part of its grammar.";fix="The flower name and its <code>.draw()</code> line should start at the far left."}
+ else if(l.includes("syntaxerror")){title="✏️ Python can't read this line yet";why="Usually this means a missing bracket, comma, quote, or an extra character.";fix="Compare the highlighted line with Luna's code."}
+ let lineText=line?$("#code").value.split("\n")[line-1]:"";
+ return `<div class="errTitle">${title}</div>${why}${line?`<div class="errLine">LINE ${line} → ${esc(lineText)}</div>`:""}<div class="fix"><b>💡 EXACTLY WHAT TO DO:</b><br>${fix}</div>${example?`<div class="fix"><b>✅ Example:</b><pre>${esc(example)}</pre></div>`:""}<details style="margin-top:12px"><summary>🐍 Show Python's technical error</summary><pre style="white-space:pre-wrap;font-size:11px">${esc(t)}</pre></details>`;
+}
+async function run(){
+ if(!pyodide)return;
+ baseScene();hideError();badLine=null;paint();$("#status").textContent="Growing your garden…";
+ try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);$("#status").textContent="✨ Your code worked!";}
+ catch(e){let line=studentLine(e);badLine=line;paint();$("#status").textContent="🌱 Almost — there's a code problem.";$("#error").innerHTML=friendly(e,line);$("#error").classList.add("show")}
+}
+$("#run").onclick=run;
+$("#reset").onclick=()=>{$("#code").value=starter;badLine=null;hideError();paint();run()};
+
+async function boot(){
+ try{
+  pyodide=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"});
+  $("#status").textContent="Python ready 🌸";$("#run").disabled=false;await run();
+ }catch(e){
+  $("#status").textContent="🐍 Python couldn't start. Refresh once and try again.";
+  console.error(e);
+ }
+}
+boot();
+</script>
+</body></html>
