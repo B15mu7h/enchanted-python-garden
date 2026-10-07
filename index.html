@@ -39,13 +39,15 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
 .butterfly{position:absolute;z-index:12;font-size:28px;filter:drop-shadow(0 0 8px #ffd4f0);animation:fly var(--dur) ease-in-out infinite alternate}
 @keyframes fly{from{transform:translate(-12px,5px) rotate(-8deg)}to{transform:translate(18px,-18px) rotate(9deg)}}
 .palette{position:absolute;left:18px;bottom:18px;z-index:20;background:rgba(15,12,33,.58);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:18px;padding:12px 14px;max-width:280px}.palette b{font-size:13px}.chips{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}.chip{width:23px;height:23px;border-radius:50%;border:2px solid rgba(255,255,255,.65);box-shadow:0 3px 8px #0004}
-.error{color:#ffb5cf!important}
+.error{color:#ffd7e8!important}
+.errorbox{margin:0 14px 14px;padding:14px 16px;border:1px solid rgba(255,150,190,.35);background:rgba(88,25,57,.28);border-radius:16px;line-height:1.5;display:none}
+.errorbox.show{display:block}.errorbox b{color:#fff}.errorbox code{background:rgba(255,255,255,.1);padding:2px 5px;border-radius:6px;color:#fff2a8}
 @media(max-width:980px){.app{grid-template-columns:1fr}.stage{height:600px}.editor{height:420px}}
 </style>
 </head>
 <body>
 <header>
- <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.2</span></h1><p>Code something beautiful. ✨</p></div>
+ <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.4</span></h1><p>Code something beautiful. ✨</p></div>
  <div class="badge">🐍 Real Python • runs in your browser</div>
 </header>
 
@@ -246,11 +248,83 @@ async function boot(){
   await runCode();
  }catch(e){$("#status").textContent="Couldn’t load Python — check internet.";$("#status").classList.add("error")}
 }
+function friendlyError(raw){
+ const t=String(raw), low=t.toLowerCase();
+ let title="🌱 Your garden needs one tiny fix";
+ let body="Python found something it couldn't understand. Check the highlighted idea below, make a small change, and try again.";
+ let tip="Look closely at the line Python mentions.";
+
+ if(low.includes("was never closed") || low.includes("unexpected eof") || low.includes("eof while parsing")){
+   title="🌸 Your flower isn't quite finished";
+   body="It looks like you opened something with <code>(</code> but forgot to close it with <code>)</code>.";
+   tip="After the last flower setting (for example <code>glow=True</code>), add a new line containing <code>)</code>.";
+ } else if(low.includes("syntaxerror")){
+   title="✏️ Python can't quite read that line";
+   body="This is a <b>syntax error</b> — the code is shaped differently from what Python expects.";
+   tip="Check for a missing <code>)</code>, comma <code>,</code>, quote <code>\"</code>, or equals sign <code>=</code>.";
+ } else if(low.includes("indentationerror") || low.includes("unexpected indent")){
+   title="↪️ The spacing is confusing Python";
+   body="Python uses indentation (spaces at the start of a line) to understand how code is grouped.";
+   tip="For this mission, <code>my_flower = Flower(</code> and <code>my_flower.draw(...)</code> should start at the far left.";
+ } else if(low.includes("nameerror")){
+   title="🏷️ Python can't find that flower name";
+   body="You are trying to use a name that Python doesn't know yet.";
+   tip="Make sure the name is identical everywhere: <code>my_flower</code> must be spelled the same when you create it and plant it.";
+ } else if(low.includes("flower is not defined")){
+   title="🌸 Python doesn't know what Flower means";
+   body="Use a capital <code>F</code>: <code>Flower(...)</code>. Python treats <code>Flower</code> and <code>flower</code> as different names.";
+   tip="Try <code>my_flower = Flower(</code>.";
+ } else if(low.includes("unexpected keyword argument")){
+   title="🧩 That flower setting isn't recognised";
+   body="One of the setting names inside <code>Flower(...)</code> is misspelled or isn't available yet.";
+   tip="Use: <code>petals</code>, <code>petal_shape</code>, <code>petal_colour</code>, <code>centre_colour</code>, <code>size</code>, <code>glitter</code>, or <code>glow</code>.";
+ } else if(low.includes("missing") && low.includes("required positional")){
+   title="🧩 Something is missing";
+   body="Python expected another piece of information before it could finish that instruction.";
+   tip="Compare your line with Luna's working flower above.";
+ } else if(low.includes("petals should be between")){
+   title="🌼 That's a LOT of petals!";
+   body="For now, each flower can have between <b>3 and 40 petals</b>.";
+   tip="Try something like <code>petals=12</code>.";
+ } else if(low.includes("petal_shape must be")){
+   title="🌺 Python doesn't know that petal shape yet";
+   body="Your shape must be one of the shapes our garden knows how to draw.";
+   tip='Try <code>"round"</code>, <code>"heart"</code>, <code>"pointed"</code>, <code>"daisy"</code>, or <code>"star"</code>.';
+ } else if(low.includes("true") && low.includes("not defined") || low.includes("false") && low.includes("not defined")){
+   title="✨ Almost! Python cares about capital letters";
+   body="Python writes booleans as <code>True</code> and <code>False</code> with capital first letters.";
+   tip="Try <code>glitter=True</code> or <code>glitter=False</code>.";
+ } else if(low.includes("unterminated string") || low.includes("eol while scanning string")){
+   title="💬 One of your words needs another quote";
+   body="Text such as colours and shapes needs a quote at both ends.";
+   tip='Write <code>petal_shape="heart"</code>, not <code>petal_shape="heart</code>.';
+ } else if(low.includes("typeerror")){
+   title="🧩 One of the flower instructions has the wrong kind of value";
+   body="A setting may contain text where Python expected a number, or another value it can't use.";
+   tip='Numbers such as <code>petals=10</code> do not need quotes; words such as <code>petal_colour="pink"</code> do.';
+ }
+
+ const line=t.match(/line (\d+)/i);
+ const where=line ? `<br><br><b>🔎 Look around line ${line[1]} in your code.</b>` : "";
+ return `<b>${title}</b><br>${body}<br><br>💡 <b>Try this:</b> ${tip}${where}<details style="margin-top:10px"><summary style="cursor:pointer;color:#cfc5e8">Show Python's original error</summary><pre style="white-space:pre-wrap;font-size:11px;color:#cfc5e8">${escapeHtml(t)}</pre></details>`;
+}
+function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));}
+
 async function runCode(){
  if(!pyodide)return;
- baseScene();const st=$("#status");st.classList.remove("error");st.textContent="Growing your garden…";
- try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);st.textContent="✨ Your code worked!";}
- catch(e){st.classList.add("error");let m=String(e).split("\n").slice(-2).join(" ");st.textContent="🌱 "+m}
+ baseScene();
+ const st=$("#status"), box=$("#errorbox");
+ box.classList.remove("show"); box.innerHTML="";
+ st.classList.remove("error");st.textContent="Growing your garden…";
+ try{
+   await pyodide.runPythonAsync(library+"\n"+$("#code").value);
+   st.textContent="✨ Your code worked! Your flowers are growing.";
+ } catch(e){
+   st.classList.add("error");
+   st.textContent="🌱 Almost! There's a tiny code problem.";
+   box.innerHTML=friendlyError(e);
+   box.classList.add("show");
+ }
 }
 $("#run").disabled=true;boot();
 </script>
