@@ -1,104 +1,54 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Enchanted Python Garden v0.8</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enchanted Python Garden v1.0</title>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
 <style>
-:root{--ink:#f9f4ff;--muted:#cfc3e9;--glass:rgba(27,18,54,.72);--line:rgba(255,255,255,.14);--pink:#ff8ed8;--lav:#b89cff}
-*{box-sizing:border-box} body{margin:0;min-height:100vh;color:var(--ink);font-family:Inter,ui-rounded,"SF Pro Rounded",system-ui,sans-serif;background:radial-gradient(circle at 15% 10%,#5b3977 0,transparent 28%),radial-gradient(circle at 85% 15%,#243c78 0,transparent 30%),linear-gradient(145deg,#110d25,#241641 55%,#0c1930);overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:46px 46px;opacity:.08}
-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px;max-width:1500px;margin:auto}
-.brand h1{margin:0;font-size:clamp(26px,4vw,44px);letter-spacing:-1.5px}.brand p{margin:5px 0 0;color:var(--muted)}
-.badge{padding:9px 14px;border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:999px;font-size:13px}
-.app{max-width:1500px;margin:auto;padding:0 24px 28px;display:grid;grid-template-columns:minmax(390px,.9fr) minmax(480px,1.25fr);gap:18px}
-.card{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(18px);border-radius:26px;box-shadow:0 22px 60px rgba(0,0,0,.28);overflow:hidden}
-.cardhead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}.cardhead strong{font-size:15px}.dots{display:flex;gap:6px}.dot{width:9px;height:9px;border-radius:50%;background:#ff8ed8}.dot:nth-child(2){background:#ffd36e}.dot:nth-child(3){background:#83e2bb}
-.lesson{padding:16px 18px;background:linear-gradient(90deg,rgba(255,142,216,.13),rgba(184,156,255,.09));border-bottom:1px solid var(--line)}
-.lesson b{color:#ffd7f1}.lesson span{color:var(--muted);font-size:13px;line-height:1.55}.lesson code{background:rgba(255,255,255,.1);color:#fff2a8;padding:2px 5px;border-radius:6px;font-family:monospace}
-.editorwrap{position:relative;padding:14px}.editor{width:100%;height:515px;border:0;outline:0;resize:vertical;border-radius:18px;background:#100d20;color:#f5eaff;padding:18px;font:14px/1.65 "SFMono-Regular",Consolas,monospace;font-weight:400;font-style:normal;letter-spacing:0;tab-size:4;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-.editor::selection{background:#7d5e9f}
-.actions{display:flex;gap:9px;align-items:center;padding:0 14px 14px}.btn{border:0;border-radius:999px;padding:12px 17px;font-weight:800;cursor:pointer}.run{background:linear-gradient(100deg,#ff89d2,#c29cff);color:#24132d;box-shadow:0 8px 24px rgba(255,137,210,.2)}.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line)}
-.status{margin-left:auto;color:var(--muted);font-size:12px;text-align:right;max-width:210px}
-.stage{position:relative;height:650px;overflow:hidden;background:linear-gradient(#15173c 0%,#493b79 42%,#c78ab8 69%,#426d63 70%,#163e39 100%)}
-.skyglow{position:absolute;width:430px;height:430px;border-radius:50%;right:-80px;top:-180px;background:radial-gradient(circle,rgba(255,235,196,.58),rgba(255,190,224,.16) 38%,transparent 67%);filter:blur(2px)}
-.moon{position:absolute;right:10%;top:8%;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#fff2c7 45%,#eac6ef);box-shadow:0 0 45px #ffe8ceaa,0 0 90px #e6c2ff66}
-.hill{position:absolute;left:-10%;right:-10%;bottom:-8%;height:39%;background:radial-gradient(ellipse at 50% 0%,#4d8469,#1a473e 65%);border-radius:50% 50% 0 0/28% 28% 0 0}
-.star{position:absolute;color:white;text-shadow:0 0 8px white;animation:twinkle var(--dur) ease-in-out infinite alternate;opacity:.8}
-@keyframes twinkle{from{opacity:.18;transform:scale(.55) rotate(0)}to{opacity:1;transform:scale(1.25) rotate(25deg)}}
-.flower{position:absolute;z-index:5;filter:drop-shadow(0 10px 10px rgba(0,0,0,.18));animation:sway 3.7s ease-in-out infinite alternate;transform-origin:50% 100%}
-@keyframes sway{from{transform:rotate(-1.8deg)}to{transform:rotate(1.8deg)}}
-.stem{position:absolute;left:50%;top:0;transform:translateX(-50%);width:7px;border-radius:10px;background:linear-gradient(90deg,#28563b,#72bd73,#356e4b);z-index:1}
-.leaf{position:absolute;width:30px;height:16px;background:linear-gradient(135deg,#80cf80,#2f7d55);border-radius:100% 0 100% 0;z-index:2}
-.petal{position:absolute;left:50%;top:50%;transform-origin:50% 100%;z-index:3;box-shadow:inset 0 0 16px rgba(255,255,255,.35),0 0 9px rgba(255,255,255,.16)}
-.petal.round{border-radius:55% 55% 48% 48%}.petal.pointed{clip-path:polygon(50% 0,94% 42%,72% 100%,28% 100%,6% 42%);border-radius:48%}.petal.heart{clip-path:path("M 50 90 C 15 62 0 42 7 22 C 14 2 39 1 50 18 C 61 1 86 2 93 22 C 100 42 85 62 50 90 Z")}
-.petal.daisy{border-radius:50% 50% 42% 42%}.petal.star{clip-path:polygon(50% 0,62% 34%,98% 35%,69% 56%,79% 92%,50% 70%,21% 92%,31% 56%,2% 35%,38% 34%)}
-.centre{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;z-index:6;box-shadow:inset 0 0 10px rgba(255,255,255,.55),0 0 16px rgba(255,220,100,.38)}
-.spark{position:absolute;z-index:10;pointer-events:none;color:#fff;text-shadow:0 0 8px #fff,0 0 15px #ffd6f4;animation:twinkle var(--dur) infinite alternate}
-.butterfly{position:absolute;z-index:12;font-size:28px;filter:drop-shadow(0 0 8px #ffd4f0);animation:fly var(--dur) ease-in-out infinite alternate}
-@keyframes fly{from{transform:translate(-12px,5px) rotate(-8deg)}to{transform:translate(18px,-18px) rotate(9deg)}}
-.palette{position:absolute;left:18px;bottom:18px;z-index:20;background:rgba(15,12,33,.58);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:18px;padding:12px 14px;max-width:280px}.palette b{font-size:13px}.chips{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}.chip{width:23px;height:23px;border-radius:50%;border:2px solid rgba(255,255,255,.65);box-shadow:0 3px 8px #0004}
-.error{color:#ffd7e8!important}
-
-
-/* v0.7 syntax-highlighted editor */
-#editorWrap{position:relative;height:515px;border-radius:18px;overflow:hidden;background:#100d20;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-#highlight,#code{position:absolute;inset:0;width:100%;height:100%;margin:0;border:0;padding:18px;box-sizing:border-box;font:14px/1.65 "SFMono-Regular",Consolas,monospace;font-weight:400;font-style:normal;letter-spacing:0;tab-size:4;white-space:pre-wrap;overflow:auto}
-#highlight{pointer-events:none;color:#f5eaff;background:#100d20}
-#code{resize:none;outline:0;background:transparent!important;color:transparent!important;caret-color:#fff;-webkit-text-fill-color:transparent;box-shadow:none!important;border-radius:0!important}
-#code::selection{background:rgba(184,156,255,.34)}
-.syn-comment{color:#72e7bd}
-.syn-string{color:#ffd47f}
-.syn-number{color:#85d9ff}
-.syn-bool{color:#ff9fd2}
-.syn-key{color:#c7adff}
-.syn-call{color:#ffb7e4}
-.syn-error-line{background:rgba(255,75,135,.30);box-shadow:0 0 0 2px rgba(255,111,159,.35);border-radius:3px}
-.errorbox{margin:4px 14px 18px;padding:24px 26px;border:2px solid rgba(255,137,184,.72);background:linear-gradient(135deg,rgba(111,27,66,.74),rgba(47,25,80,.76));border-radius:22px;line-height:1.62;display:none;font-size:17px;box-shadow:0 16px 42px rgba(0,0,0,.3)}
-.errorbox.show{display:block}
-.errorbox b{color:#fff}
-.errorbox code{background:rgba(255,255,255,.13);padding:3px 7px;border-radius:7px;color:#fff2a8;font-size:.95em}
-.error-title{display:block;font-size:27px;line-height:1.15;margin-bottom:14px;color:#fff;font-weight:900}
-.error-line{margin:16px 0;padding:14px 16px;background:rgba(10,8,25,.64);border-left:5px solid #ff80b1;border-radius:9px;font:15px/1.5 "SFMono-Regular",Consolas,monospace;color:#fff}
-.error-fix{margin-top:15px;padding:15px 17px;background:rgba(117,230,194,.11);border:1px solid rgba(117,230,194,.35);border-radius:13px}
-
-@media(max-width:980px){.app{grid-template-columns:1fr}.stage{height:600px}#editorWrap{height:460px}}
+:root{--bg:#100d20;--panel:#1c1634;--line:#ffffff20;--text:#f8f4ff;--muted:#cfc6df;--mint:#73e7bd;--pink:#ff9dce;--gold:#ffe08b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 75% 15%,#43265f 0,#17112c 38%,#0d0a19 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
+header{max-width:1450px;margin:auto;padding:20px 24px 12px;display:flex;justify-content:space-between;align-items:center}.brand{font-size:clamp(24px,4vw,42px);font-weight:900}.badge{border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--muted)}
+.app{max-width:1450px;margin:auto;padding:10px 24px 28px;display:grid;grid-template-columns:minmax(400px,.95fr) minmax(480px,1.05fr);gap:22px}.card{background:#171229dd;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 20px 55px #0006}.head{padding:15px 18px;border-bottom:1px solid var(--line);font-weight:850}
+.mission{padding:17px 19px;background:linear-gradient(90deg,#ff8ed821,#b99cff19);line-height:1.55;color:var(--muted)}.mission strong{color:#fff}.mission code{background:#ffffff12;color:var(--gold);padding:2px 6px;border-radius:6px}
+.editorShell{position:relative;height:570px;background:var(--bg);overflow:hidden}
+#paint,#code{position:absolute;inset:0;width:100%;height:100%;padding:20px;margin:0;border:0;overflow:auto;white-space:pre-wrap;overflow-wrap:normal;font:15px/1.62 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:400;font-style:normal;letter-spacing:0;tab-size:4}
+#paint{pointer-events:none;color:#f8f4ff;background:var(--bg)}#code{resize:none;outline:0;background:transparent;color:transparent;-webkit-text-fill-color:transparent;caret-color:#fff}#code::selection{background:#a98aff55}
+.c{color:var(--mint)}.s{color:#ffd884}.n{color:#8fdcff}.b{color:#ff9ed1}.k{color:#c7adff}.f{color:#ffb8e2}.bad{background:#ff4e8738;box-shadow:inset 4px 0 #ff709f}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-top:1px solid var(--line)}button{border:0;border-radius:12px;padding:11px 16px;font-weight:850;cursor:pointer}.run{background:linear-gradient(135deg,#ff8ed8,#b89cff);color:#20132e}.ghost{background:#ffffff10;color:#eee;border:1px solid var(--line)}button:disabled{opacity:.45}.status{margin-left:auto;color:var(--muted);font-size:13px}
+#error{display:none;margin:0 16px 17px;padding:22px;border:2px solid #ff8bb6aa;border-radius:18px;background:linear-gradient(135deg,#6e204bbd,#321d57c9);font-size:16px;line-height:1.55}#error.show{display:block}.errTitle{font-size:24px;font-weight:950;margin-bottom:10px}.errLine{margin:13px 0;padding:12px;background:#0d0a19aa;border-left:4px solid #ff82af;border-radius:7px;font:14px/1.45 ui-monospace,monospace}.fix{padding:13px;background:#73e7bd16;border:1px solid #73e7bd50;border-radius:10px}.fix code,#error code{color:var(--gold)}
+.stage{height:760px;position:relative;overflow:hidden;background:linear-gradient(#17173d 0,#382757 48%,#82668a 72%,#294f43 73%)}.moon{position:absolute;width:115px;height:115px;border-radius:50%;right:9%;top:8%;background:#fff7cf;box-shadow:0 0 50px #fff0a780}.hill{position:absolute;left:-8%;right:-8%;bottom:-80px;height:280px;background:#163d35;border-radius:50% 50% 0 0/35% 35% 0 0}.label{position:absolute;bottom:20px;z-index:20;background:#100d20aa;border:1px solid var(--line);padding:7px 11px;border-radius:999px;font-size:12px}.luna{left:18%}.yours{right:16%;border-style:dashed}
+.flower{position:absolute;transform:translate(-50%,-100%);z-index:8}.stem{position:absolute;width:5px;height:120px;background:#39875f;left:50%;top:35px;transform:translateX(-50%);border-radius:8px}.headflower{position:relative;width:var(--sz);height:var(--sz);filter:drop-shadow(0 5px 7px #0004)}.petal{position:absolute;left:50%;top:50%;width:42%;height:55%;background:var(--pc);border-radius:60% 60% 48% 48%;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(var(--r)) translateY(-22%)}.petal.heart{clip-path:polygon(50% 92%,8% 45%,7% 25%,20% 9%,38% 9%,50% 22%,62% 9%,80% 9%,93% 25%,92% 45%)}.petal.pointed{clip-path:polygon(50% 0,100% 75%,50% 100%,0 75%)}.petal.star{clip-path:polygon(50% 0,62% 34%,98% 38%,70% 60%,80% 96%,50% 76%,20% 96%,30% 60%,2% 38%,38% 34%)}.centre{position:absolute;width:28%;height:28%;left:36%;top:36%;border-radius:50%;background:var(--cc);z-index:4;box-shadow:0 0 14px #fff5}.spark{position:absolute;color:#fff;font-size:12px;animation:tw 1.4s infinite alternate}@keyframes tw{to{opacity:.2;transform:scale(.65)}}.glow{filter:drop-shadow(0 0 13px var(--pc))}.stars{position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:73px 73px;opacity:.5}
+@media(max-width:950px){.app{grid-template-columns:1fr}.stage{height:620px}.editorShell{height:540px}}
 </style>
 </head>
 <body>
-<header>
- <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.8</span></h1><p>Code something beautiful. ✨</p></div>
- <div class="badge">🐍 Real Python • runs in your browser</div>
-</header>
-
+<header><div class="brand">ENCHANTED PYTHON GARDEN 🌿</div><div class="badge">MISSION 1 · v1.0</div></header>
 <main class="app">
 <section class="card">
- <div class="cardhead"><strong>✨ YOUR PYTHON</strong><div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div></div>
- <div class="lesson">
-<b>🌸 MISSION 1 · Make a flower of your own</b><br>
-<span>
-<strong style="color:white">Luna's flower is already growing in the garden.</strong><br><br>
-Your job is to create a <strong style="color:#ffd7f1">second flower beside it</strong>.<br><br>
-① Find <code>luna_flower = Flower(...)</code> — this means <strong style="color:white">CREATE A FLOWER</strong>. 🌸<br>
-② Look at the choices inside it: petals, shape, colours, size, glitter and glow.<br>
-③ Find <code>luna_flower.draw(x=30, y=68)</code> — this means <strong style="color:white">CHOOSE WHERE TO PLANT IT</strong>. 🌱<br>
-④ <code>x</code> moves the flower left ↔ right and <code>y</code> moves it up ↕ down.<br>
-⑤ Create <code>my_flower</code>, customise it, then plant it at <code>x=68, y=68</code>.<br>
-⑥ Press <strong>▶ RUN MY GARDEN</strong> and see what grows! ✨
-</span>
-</div>
- <div class="editorwrap"><div id="editorWrap"><pre id="highlight" aria-hidden="true"></pre><textarea id="code" class="editor" spellcheck="false"># 🌸 MISSION 1: Make your own flower!
-#
-# Luna's flower is already made for you.
-# FIRST: press RUN and see what Luna's flower looks like.
-#
-# THEN: make YOUR flower underneath it!
-
-
-# ─────────────────────────────────────────
+ <div class="head">✨ LEARN PYTHON BY GROWING A GARDEN</div>
+ <div class="mission"><strong>🌸 YOUR MISSION: Create a flower beside Luna's.</strong><br><br>
+  ① Luna's flower is already built below. Press <strong>RUN</strong> once to see it.<br>
+  ② <code>my_flower = Flower(...)</code> means <strong>CREATE A FLOWER</strong>.<br>
+  ③ Change its petals, shape, colours, size, glitter and glow.<br>
+  ④ <code>my_flower.draw(x=68, y=68)</code> means <strong>CHOOSE WHERE TO PLANT IT</strong>.<br>
+  ⑤ <code>x</code> moves left ↔ right. <code>y</code> moves up ↕ down.<br>
+  ⑥ Press <strong>▶ RUN MY GARDEN</strong> and see what grows! ✨
+ </div>
+ <div class="editorShell"><pre id="paint" aria-hidden="true"></pre><textarea id="code" spellcheck="false"></textarea></div>
+ <div class="actions"><button id="run" class="run" disabled>▶ RUN MY GARDEN</button><button id="reset" class="ghost">Reset</button><div id="status" class="status">Python is waking up… ✨</div></div>
+ <div id="error" role="alert" aria-live="polite"></div>
+</section>
+<section class="card">
+ <div class="head">🌷 YOUR GARDEN</div>
+ <div id="stage" class="stage"><div class="stars"></div><div class="moon"></div><div class="hill"></div><div class="label luna">🌷 Luna's flower</div><div class="label yours">✨ Your flower goes here!</div></div>
+</section>
+</main>
+<script>
+const $=q=>document.querySelector(q);
+const starter=`# ─────────────────────────────────────
 # 🌷 LUNA'S FLOWER — already finished!
-# ─────────────────────────────────────────
+# ─────────────────────────────────────
 #
 # 🌸 CREATE A FLOWER
 # This makes a new flower and names it luna_flower.
@@ -114,360 +64,122 @@ luna_flower = Flower(
 )
 
 # 🌱 CHOOSE WHERE TO PLANT THE FLOWER
-# x moves it LEFT ↔ RIGHT
-# y moves it UP ↕ DOWN
-#
-# Try changing x=30 and press RUN to see what happens!
-
+# x = LEFT ↔ RIGHT     y = UP ↕ DOWN
 luna_flower.draw(x=30, y=68)
 
 
-# ─────────────────────────────────────────
-# ✨ YOUR TURN!
-# ─────────────────────────────────────────
+# ─────────────────────────────────────
+# ✨ YOUR TURN — CREATE YOUR FLOWER!
+# ─────────────────────────────────────
 #
-# Copy Luna's Flower(...) code above
-# and paste it BELOW this line.
-#
-# Then:
-#
-# 1. Change luna_flower to my_flower
-#
-# 2. Pick how many petals you want:
-#       petals=6
-#       petals=12
-#       petals=20
-#
-# 3. Pick a petal shape:
-#       "round"
-#       "heart"
-#       "pointed"
-#       "daisy"
-#       "star"
-#
-# 4. Choose your colours!
-#    Try:
-#       "hotpink"
-#       "purple"
-#       "skyblue"
-#       "#bca7ff"
-#
-# 5. Choose:
-#       glitter=True
-#    or
-#       glitter=False
-#
-# 6. IMPORTANT! Put your flower on
-#    the RIGHT side of Luna's:
-#
-#       my_flower.draw(x=68, y=68)
-#
-# 7. Press ▶ RUN MY GARDEN
-#
-# 🌸 Can you make two completely
-#    different flowers grow together?
-</textarea></div></div>
- <div class="actions">
-  <button class="btn run" id="run" onclick="runCode()">▶ RUN MY GARDEN</button>
-  <button class="btn ghost" onclick="resetCode()">↺ Reset</button>
-  <button class="btn ghost" onclick="clearGarden()">Clear</button>
-  <div class="status" id="status">Python is waking up… ✨</div>
- </div>
- <div id="errorbox" class="errorbox" role="alert" aria-live="polite"></div>
-</section>
+# Change the choices below and press RUN.
 
-<section class="card">
- <div class="cardhead"><strong>🌷 YOUR GARDEN</strong><span style="font-size:12px;color:var(--muted)">Luna's flower + your creation ✨</span></div>
- <div id="garden" class="stage">
-  <div class="skyglow"></div><div class="moon"></div><div class="hill"></div>
-  <div style="position:absolute;left:20%;bottom:22px;z-index:21;background:rgba(16,13,32,.62);border:1px solid rgba(255,255,255,.14);padding:7px 11px;border-radius:999px;font-size:12px">🌷 Luna's flower</div>
-  <div style="position:absolute;right:18%;bottom:22px;z-index:21;background:rgba(16,13,32,.62);border:1px dashed rgba(255,215,241,.55);padding:7px 11px;border-radius:999px;font-size:12px">✨ Your flower goes here!</div>
-  <div class="palette"><b>Try these colours in your code</b><div class="chips">
-   <i class="chip" style="background:#ff86d3" title="#ff86d3"></i><i class="chip" style="background:#bca7ff" title="#bca7ff"></i><i class="chip" style="background:#83d8ff" title="#83d8ff"></i><i class="chip" style="background:#ffb7e6" title="#ffb7e6"></i><i class="chip" style="background:#fff2a8" title="#fff2a8"></i><i class="chip" style="background:#8de5b4" title="#8de5b4"></i>
-  </div></div>
- </div>
-</section>
-</main>
+my_flower = Flower(
+    petals=8,
+    petal_shape="round",
+    petal_colour="purple",
+    centre_colour="gold",
+    size=65,
+    glitter=True,
+    glow=False
+)
 
-<script>
-let pyodide, originalCode;
-const $=s=>document.querySelector(s);
-originalCode=$("#code").value;
+# 🌱 CHOOSE WHERE TO PLANT YOUR FLOWER
+my_flower.draw(x=68, y=68)
+`;
+$("#code").value=starter;
 
-function baseScene(){
- const g=$("#garden");
- g.querySelectorAll(".flower,.spark,.butterfly,.star").forEach(e=>e.remove());
- for(let i=0;i<42;i++){
-  const s=document.createElement("span");s.className="star";s.textContent=Math.random()>.72?"✦":"·";
-  s.style.left=(3+Math.random()*94)+"%";s.style.top=(3+Math.random()*53)+"%";s.style.fontSize=(8+Math.random()*11)+"px";s.style.setProperty("--dur",(1.2+Math.random()*2.8)+"s");g.appendChild(s)
- }
+function esc(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function lex(line){
+ let o="",i=0,keys=new Set(["class","def","if","else","elif","for","in","while","return","import","from","as","and","or","not"]), bools=new Set(["True","False","None"]);
+ while(i<line.length){
+  let ch=line[i];
+  if(ch==="#"){o+='<span class="c">'+esc(line.slice(i))+'</span>';break}
+  if(ch==='"'||ch==="'"){let q=ch,j=i+1,e=false;while(j<line.length){let z=line[j];if(!e&&z===q){j++;break}if(!e&&z==="\\")e=true;else e=false;j++}o+='<span class="s">'+esc(line.slice(i,j))+'</span>';i=j;continue}
+  if(/[0-9]/.test(ch)){let j=i+1;while(j<line.length&&/[0-9.]/.test(line[j]))j++;o+='<span class="n">'+esc(line.slice(i,j))+'</span>';i=j;continue}
+  if(/[A-Za-z_]/.test(ch)){let j=i+1;while(j<line.length&&/[A-Za-z0-9_]/.test(line[j]))j++;let w=line.slice(i,j),cl=bools.has(w)?"b":keys.has(w)?"k":(w==="Flower"?"f":"");o+=cl?`<span class="${cl}">${w}</span>`:w;i=j;continue}
+  o+=esc(ch);i++;
+ }return o
 }
-baseScene();
+let badLine=null;
+function paint(){
+ let lines=$("#code").value.split("\n");
+ $("#paint").innerHTML=lines.map((l,i)=>badLine===i+1?`<span class="bad">${lex(l)||"&nbsp;"}</span>`:lex(l)).join("\n")+" ";
+ $("#paint").scrollTop=$("#code").scrollTop;$("#paint").scrollLeft=$("#code").scrollLeft;
+}
+$("#code").addEventListener("input",()=>{badLine=null;hideError();paint()});
+$("#code").addEventListener("scroll",paint);paint();
 
-window.clearGarden=()=>{baseScene();$("#status").textContent="Fresh garden ready 🌱"};
-window.resetCode=()=>{$("#code").value=originalCode;runCode()};
-
-window.draw_flower=(x,y,petals,shape,petalColour,centreColour,size,glitter,glow)=>{
- const g=$("#garden"), f=document.createElement("div");f.className="flower";f.style.left=x+"%";f.style.top=y+"%";
- const stem=document.createElement("div");stem.className="stem";stem.style.height=size*2.15+"px";f.appendChild(stem);
- for(let k=0;k<2;k++){const l=document.createElement("i");l.className="leaf";l.style.top=(size*(.85+k*.55))+"px";l.style.left=k?"48%":"8%";l.style.transform=k?"rotate(35deg)":"rotate(-35deg) scaleX(-1)";f.appendChild(l)}
- for(let i=0;i<petals;i++){
-  const p=document.createElement("i");p.className="petal "+shape;
-  let w=size*.62,h=size;
-  if(shape==="daisy"){w=size*.34;h=size*1.05}
-  if(shape==="pointed"){w=size*.58;h=size*1.08}
-  if(shape==="star"){w=size*.72;h=size*.9}
-  p.style.width=w+"px";p.style.height=h+"px";p.style.marginLeft=-w/2+"px";p.style.marginTop=-h+"px";
-  p.style.background=`linear-gradient(to bottom,rgba(255,255,255,.58),${petalColour} 34%,${petalColour} 82%,rgba(80,25,80,.35))`;
-  p.style.transform=`rotate(${i*(360/petals)}deg)`;
-  if(glow)p.style.filter=`drop-shadow(0 0 ${Math.max(5,size*.12)}px ${petalColour})`;
-  f.appendChild(p)
- }
- const c=document.createElement("i");c.className="centre";c.style.width=size*.48+"px";c.style.height=size*.48+"px";c.style.background=`radial-gradient(circle at 32% 28%,white,${centreColour} 35%,${centreColour} 70%,#8d6c3b)`;f.appendChild(c);
- if(glitter){for(let i=0;i<20;i++){const sp=document.createElement("span");sp.className="spark";sp.textContent=Math.random()>.5?"✦":"✧";sp.style.left=(Math.random()*size*2-size)+"px";sp.style.top=(Math.random()*size*1.8-size)+"px";sp.style.fontSize=(7+Math.random()*10)+"px";sp.style.setProperty("--dur",(1+Math.random()*2)+"s");f.appendChild(sp)}}
- g.appendChild(f)
-};
-
-window.draw_butterfly=(x,y,colour)=>{
- const b=document.createElement("div");b.className="butterfly";b.style.left=x+"%";b.style.top=y+"%";b.style.setProperty("--dur",(2.2+Math.random()*2)+"s");b.textContent=(colour==="💜"||colour==="🩷"||colour==="💙")?colour+"🦋":"🦋";$("#garden").appendChild(b)
+function baseScene(){document.querySelectorAll(".flower").forEach(x=>x.remove())}
+window.draw_flower=(petals,shape,pc,cc,size,glitter,glow,x,y)=>{
+ const wrap=document.createElement("div");wrap.className="flower";wrap.style.left=x+"%";wrap.style.top=y+"%";
+ const stem=document.createElement("div");stem.className="stem";wrap.appendChild(stem);
+ const h=document.createElement("div");h.className="headflower"+(glow?" glow":"");h.style.setProperty("--sz",size+"px");h.style.setProperty("--pc",pc);h.style.setProperty("--cc",cc);
+ for(let i=0;i<petals;i++){let p=document.createElement("div");p.className="petal "+shape;p.style.setProperty("--r",(360/petals*i)+"deg");h.appendChild(p)}
+ let c=document.createElement("div");c.className="centre";h.appendChild(c);
+ if(glitter)for(let i=0;i<5;i++){let q=document.createElement("span");q.className="spark";q.textContent="✦";q.style.left=(10+Math.random()*80)+"%";q.style.top=(5+Math.random()*80)+"%";q.style.animationDelay=(Math.random())+"s";h.appendChild(q)}
+ wrap.appendChild(h);$("#stage").appendChild(wrap);
 };
 
 const library=`
-from js import draw_flower, draw_butterfly
-
+from js import draw_flower
 class Flower:
-    """A flower you can design with Python."""
-    def __init__(self, petals=8, petal_shape="round",
-                 petal_colour="#ff86d3", centre_colour="#ffd65c",
-                 size=60, glitter=False, glow=False):
-        self.petals = petals
-        self.petal_shape = petal_shape
-        self.petal_colour = petal_colour
-        self.centre_colour = centre_colour
-        self.size = size
-        self.glitter = glitter
-        self.glow = glow
-
-    def draw(self, x=50, y=65):
+    def __init__(self, petals=8, petal_shape="round", petal_colour="pink", centre_colour="gold", size=60, glitter=False, glow=False):
+        self.petals=petals
+        self.petal_shape=petal_shape
+        self.petal_colour=petal_colour
+        self.centre_colour=centre_colour
+        self.size=size
+        self.glitter=glitter
+        self.glow=glow
+    def draw(self, x=50, y=68):
+        if not isinstance(self.petals, int):
+            raise TypeError("petals must be a whole number")
         if self.petals < 3 or self.petals > 40:
-            raise ValueError("petals should be between 3 and 40 🌸")
-        if self.petal_shape not in ["round","pointed","daisy","star","heart"]:
-            raise ValueError('petal_shape can be "round", "pointed", "daisy", "star", or "heart"')
-        draw_flower(x, y, self.petals, self.petal_shape,
-                    self.petal_colour, self.centre_colour,
-                    self.size, self.glitter, self.glow)
-
-class Butterfly:
-    def __init__(self, x=50, y=30, colour="💜"):
-        draw_butterfly(x, y, colour)
+            raise ValueError("petals should be between 3 and 40")
+        if self.petal_shape not in ["round","heart","pointed","daisy","star"]:
+            raise ValueError("petal_shape must be round, heart, pointed, daisy, or star")
+        draw_flower(self.petals,self.petal_shape,self.petal_colour,self.centre_colour,self.size,self.glitter,self.glow,x,y)
 `;
+let pyodide=null;
+function hideError(){$("#error").classList.remove("show");$("#error").innerHTML=""}
+function studentLine(raw){
+ const ms=[...String(raw).matchAll(/line (\d+)/gi)]; if(!ms.length)return null;
+ let n=Number(ms.at(-1)[1]), off=library.split("\n").length, candidate=n-off, total=$("#code").value.split("\n").length;
+ if(candidate>=1&&candidate<=total)n=candidate;
+ return n>=1&&n<=total?n:null;
+}
+function friendly(raw,line){
+ let t=String(raw),l=t.toLowerCase(),title="🌱 Python found something to fix",why="Python couldn't understand one of the instructions yet.",fix="Compare this line with Luna's working code above.",example="";
+ if(l.includes("was never closed")||l.includes("unexpected eof")){title="🌸 You forgot to close your Flower( )";why="You opened <code>Flower(</code> but Python never found its matching <code>)</code>.";fix="After the last flower setting, add a closing <code>)</code>.";example="glow=True\\n)\\n\\nmy_flower.draw(x=68, y=68)"}
+ else if(l.includes("unterminated string")){title="💬 A word is missing its closing quote";why="Text such as a colour or shape needs quotes at both ends.";fix='Use something like <code>petal_shape="heart"</code>.'}
+ else if(l.includes("name 'true'")||l.includes("name 'false'")){title="✨ True and False need capital letters";why="Python treats <code>True</code> and <code>False</code> as special values.";fix="Use <code>glitter=True</code> or <code>glitter=False</code>."}
+ else if(l.includes("nameerror")){title="🏷️ Python can't find that name";why="The flower name you used doesn't exactly match one you've created.";fix="Check spelling: <code>my_flower</code> must be identical everywhere."}
+ else if(l.includes("petals should be between")){title="🌼 Choose between 3 and 40 petals";why="Our garden draws flowers with 3–40 petals.";fix="Try <code>petals=12</code>."}
+ else if(l.includes("petal_shape must be")){title="🌺 That petal shape isn't available yet";why="The garden only knows its current set of petal shapes.";fix='Choose <code>"round"</code>, <code>"heart"</code>, <code>"pointed"</code>, <code>"daisy"</code>, or <code>"star"</code>.'}
+ else if(l.includes("indentationerror")){title="↪️ Check the spaces at the start of this line";why="Python uses indentation as part of its grammar.";fix="The flower name and its <code>.draw()</code> line should start at the far left."}
+ else if(l.includes("syntaxerror")){title="✏️ Python can't read this line yet";why="Usually this means a missing bracket, comma, quote, or an extra character.";fix="Compare the highlighted line with Luna's code."}
+ let lineText=line?$("#code").value.split("\n")[line-1]:"";
+ return `<div class="errTitle">${title}</div>${why}${line?`<div class="errLine">LINE ${line} → ${esc(lineText)}</div>`:""}<div class="fix"><b>💡 EXACTLY WHAT TO DO:</b><br>${fix}</div>${example?`<div class="fix"><b>✅ Example:</b><pre>${esc(example)}</pre></div>`:""}<details style="margin-top:12px"><summary>🐍 Show Python's technical error</summary><pre style="white-space:pre-wrap;font-size:11px">${esc(t)}</pre></details>`;
+}
+async function run(){
+ if(!pyodide)return;
+ baseScene();hideError();badLine=null;paint();$("#status").textContent="Growing your garden…";
+ try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);$("#status").textContent="✨ Your code worked!"}
+ catch(e){let line=studentLine(e);badLine=line;paint();$("#status").textContent="🌱 Almost — there's a code problem.";$("#error").innerHTML=friendly(e,line);$("#error").classList.add("show")}
+}
+$("#run").onclick=run;
+$("#reset").onclick=()=>{$("#code").value=starter;badLine=null;hideError();paint();run()};
 
 async function boot(){
- const st=$("#status");
  try{
-   pyodide=await loadPyodide();
+  pyodide=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"});
+  $("#status").textContent="Python ready 🌸";$("#run").disabled=false;await run();
  }catch(e){
-   st.textContent="🐍 Python couldn't download. Check your connection and refresh.";
-   st.classList.add("error");
-   console.error("Pyodide load error:",e);
-   return;
- }
- st.textContent="Python ready 🌸";
- $("#run").disabled=false;
- try{
-   await runCode();
- }catch(e){
-   st.textContent="🌱 The garden loaded, but something in the app needs fixing.";
-   st.classList.add("error");
-   console.error("Garden startup error:",e);
+  $("#status").textContent="🐍 Python couldn't start. Refresh once and try again.";
+  console.error(e);
  }
 }
-
-function escCode(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function highlightPython(src, errorLine=null){
- const keywords=new Set(["class","def","if","else","elif","for","in","while","return","import","from","as","and","or","not"]);
- const bools=new Set(["True","False","None"]);
- const calls=new Set(["Flower","Butterfly"]);
-
- function tokeniseLine(line){
-   let out="", i=0;
-   while(i<line.length){
-     const ch=line[i];
-
-     // A Python comment owns everything after #, unless # is inside a string.
-     if(ch==="#"){
-       out+='<span class="syn-comment">'+escCode(line.slice(i))+'</span>';
-       break;
-     }
-
-     // Quoted strings: keep # characters inside colours such as "#ff86d3".
-     if(ch==='"' || ch==="'"){
-       const quote=ch;
-       let j=i+1, escaped=false;
-       while(j<line.length){
-         const c=line[j];
-         if(!escaped && c===quote){ j++; break; }
-         if(!escaped && c==="\\"){ escaped=true; }
-         else { escaped=false; }
-         j++;
-       }
-       out+='<span class="syn-string">'+escCode(line.slice(i,j))+'</span>';
-       i=j; continue;
-     }
-
-     // Numbers.
-     if(/[0-9]/.test(ch) && (i===0 || !/[A-Za-z_]/.test(line[i-1]))){
-       let j=i+1;
-       while(j<line.length && /[0-9.]/.test(line[j])) j++;
-       out+='<span class="syn-number">'+escCode(line.slice(i,j))+'</span>';
-       i=j; continue;
-     }
-
-     // Python names / words.
-     if(/[A-Za-z_]/.test(ch)){
-       let j=i+1;
-       while(j<line.length && /[A-Za-z0-9_]/.test(line[j])) j++;
-       const word=line.slice(i,j);
-       const safeWord=escCode(word);
-       if(bools.has(word)) out+='<span class="syn-bool">'+safeWord+'</span>';
-       else if(keywords.has(word)) out+='<span class="syn-key">'+safeWord+'</span>';
-       else if(calls.has(word)) out+='<span class="syn-call">'+safeWord+'</span>';
-       else out+=safeWord;
-       i=j; continue;
-     }
-
-     out+=escCode(ch);
-     i++;
-   }
-   return out;
- }
-
- return src.split("\n").map((line,i)=>{
-   let rendered=tokeniseLine(line);
-   if(errorLine===i+1){
-     rendered='<span class="syn-error-line">'+(rendered || '&nbsp;')+'</span>';
-   }
-   return rendered;
- }).join("\n")+" ";
-}
-function syncHighlight(){
- const code=$("#code"), hi=$("#highlight");
- hi.innerHTML=highlightPython(code.value,currentErrorLine);
- hi.scrollTop=code.scrollTop;hi.scrollLeft=code.scrollLeft;
-}
-function clearErrorHighlight(){
- currentErrorLine=null;
- syncHighlight();
-}
-function highlightErrorLine(lineNumber){
- currentErrorLine=lineNumber;
- syncHighlight();
- const code=$("#code");
- const lines=code.value.split("\n");
- const lineHeight=parseFloat(getComputedStyle(code).lineHeight)||21.7;
- const target=Math.max(0,(lineNumber-4)*lineHeight);
- code.scrollTop=target;
- $("#highlight").scrollTop=target;
-}
-$("#code").addEventListener("input",()=>{currentErrorLine=null;syncHighlight();});
-$("#code").addEventListener("scroll",syncHighlight);
-syncHighlight();
-
-function codeLineFromError(t){
- const matches=[...String(t).matchAll(/line (\d+)/gi)];
- if(!matches.length)return null;
- const n=parseInt(matches[matches.length-1][1],10);
- // library is prepended before student code, so traceback line can be offset.
- const libLines=library.split("\n").length;
- let student=n-libLines;
- if(student<1 || student>$("#code").value.split("\n").length) student=n;
- const lines=$("#code").value.split("\n");
- return student>=1&&student<=lines.length ? {n:student,text:lines[student-1]} : null;
-}
-function friendlyError(raw){
- const t=String(raw), low=t.toLowerCase(), loc=codeLineFromError(t);
- let title="🌱 Python found something to fix";
- let why="Python couldn't understand one of the instructions yet.";
- let fix="Compare the line with Luna's working flower and look for one small difference.";
- let example="";
-
- if(low.includes("was never closed") || low.includes("unexpected eof") || low.includes("eof while parsing")){
-   title="🌸 You forgot to CLOSE your Flower( )";
-   why="You started creating a flower with <code>Flower(</code>, but Python reached the next instruction before finding the matching closing <code>)</code>.";
-   fix="Go to the end of your flower settings. After the final setting such as <code>glow=True</code>, put <code>)</code> on its own line.";
-   example="glow=True\n)\n\nmy_flower.draw(x=68, y=68)";
- } else if(low.includes("unterminated string") || low.includes("eol while scanning string")){
-   title="💬 A word is missing its closing quote";
-   why="Python sees the first quote but cannot find where your word or colour ends.";
-   fix='Make sure text has quotes on BOTH sides.';
-   example='petal_shape="heart"\npetal_colour="hotpink"';
- } else if(low.includes("name 'true' is not defined") || low.includes("name 'false' is not defined")){
-   title="✨ Use True or False with a CAPITAL letter";
-   why="In Python, <code>True</code> and <code>False</code> are special values. Lowercase <code>true</code> and <code>false</code> are treated like names.";
-   fix="Change the first letter to a capital.";
-   example="glitter=True\nglow=False";
- } else if(low.includes("nameerror")){
-   const nm=(t.match(/name ['"]([^'"]+)['"] is not defined/i)||[])[1];
-   title=nm?`🏷️ Python doesn't know the name “${escapeHtml(nm)}”`:"🏷️ Python can't find that name";
-   why=nm?`You asked Python to use <code>${escapeHtml(nm)}</code>, but it hasn't seen a flower with that exact name yet.`:"The name used to plant the flower doesn't exactly match a name that was created.";
-   fix="Check spelling, underscores and capital letters. The name before <code>.draw</code> must exactly match the name before <code>= Flower(</code>.";
-   example="my_flower = Flower(\n    petals=10\n)\n\nmy_flower.draw(x=68, y=68)";
- } else if(low.includes("unexpected keyword argument")){
-   const kw=(t.match(/unexpected keyword argument ['"]([^'"]+)['"]/i)||[])[1];
-   title=kw?`🧩 “${escapeHtml(kw)}” isn't a flower setting`:"🧩 That flower setting isn't recognised";
-   why="Python only knows the flower settings we built into this garden. This setting may be misspelled.";
-   fix="Choose from: <code>petals</code>, <code>petal_shape</code>, <code>petal_colour</code>, <code>centre_colour</code>, <code>size</code>, <code>glitter</code>, <code>glow</code>.";
- } else if(low.includes("petals should be between")){
-   title="🌼 Choose between 3 and 40 petals";
-   why="The garden deliberately limits petal numbers so the flower still draws properly.";
-   fix="Change your petals number to anything from <b>3–40</b>.";
-   example="petals=12";
- } else if(low.includes("petal_shape must be")){
-   title="🌺 That petal shape isn't in our garden yet";
-   why="The word you entered isn't one of the shapes the flower artist currently knows how to draw.";
-   fix='Choose exactly one of: <code>"round"</code>, <code>"heart"</code>, <code>"pointed"</code>, <code>"daisy"</code>, <code>"star"</code>.';
-   example='petal_shape="heart"';
- } else if(low.includes("indentationerror") || low.includes("unexpected indent")){
-   title="↪️ This line has too many or too few spaces";
-   why="Python uses spaces at the beginning of lines as part of its grammar.";
-   fix="For this mission, <code>my_flower = Flower(</code> and <code>my_flower.draw(...)</code> should begin all the way at the left. Settings inside <code>Flower(...)</code> can be indented.";
- } else if(low.includes("syntaxerror")){
-   title="✏️ Python can't read the shape of this code yet";
-   why="This is a <b>SyntaxError</b>. Usually in this mission it means a missing <code>)</code>, comma, quote, or an extra character.";
-   fix="Look at the exact line below, then compare it with Luna's working code immediately above.";
- } else if(low.includes("typeerror")){
-   title="🧩 This setting has the wrong kind of value";
-   why="Python understood the instruction, but one of the values isn't the kind it expected.";
-   fix='Use numbers without quotes, such as <code>petals=10</code>; words with quotes, such as <code>petal_colour="pink"</code>; and booleans as <code>True</code>/<code>False</code>.';
- }
-
- const lineBlock=loc?`<div class="error-line">LINE ${loc.n} → ${escapeHtml(loc.text||"(blank line)")}</div>`:"";
- const exampleBlock=example?`<div class="error-fix"><b>✅ It should look like this:</b><pre style="white-space:pre-wrap;margin:8px 0 0">${escapeHtml(example)}</pre></div>`:"";
- return `<span class="error-title">${title}</span>${why}${lineBlock}<div class="error-fix"><b>💡 EXACTLY WHAT TO DO:</b><br>${fix}</div>${exampleBlock}<details style="margin-top:14px"><summary style="cursor:pointer;color:#cfc5e8">🐍 Show Python's original technical error</summary><pre style="white-space:pre-wrap;font-size:11px;color:#cfc5e8">${escapeHtml(t)}</pre></details>`;
-}
-function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));}
-
-async function runCode(){
- if(!pyodide)return;
- baseScene();
- clearErrorHighlight();
- const st=$("#status"), box=$("#errorbox");
- box.classList.remove("show"); box.innerHTML="";
- st.classList.remove("error");st.textContent="Growing your garden…";
- try{
-   await pyodide.runPythonAsync(library+"\n"+$("#code").value);
-   st.textContent="✨ Your code worked! Your flowers are growing.";
- } catch(e){
-   st.classList.add("error");
-   st.textContent="🌱 Almost! There's a tiny code problem.";
-   const loc=codeLineFromError(String(e));
-   if(loc) highlightErrorLine(loc.n);
-   box.innerHTML=friendlyError(e);
-   box.classList.add("show");
-   box.scrollIntoView({behavior:"smooth",block:"nearest"});
- }
-}
-$("#run").disabled=true;boot();
+boot();
 </script>
-</body>
-</html>
+</body></html>
