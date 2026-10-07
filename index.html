@@ -61,8 +61,6 @@ header{max-width:1450px;margin:auto;padding:20px 24px 12px;display:flex;justify-
 </section>
 </main>
 
-<div id="celebrate" class="celebrate">✨ You just used real Python! Every change you make is an experiment: change the code → run it → observe what happens.</div>
-
 <section class="learning">
  <article class="learnCard">
   <div class="learnTitle">✨ PYTHON POWERS YOU JUST UNLOCKED</div>
@@ -154,7 +152,7 @@ function paint(){
  $("#paint").innerHTML=lines.map((l,i)=>badLine===i+1?`<span class="bad">${lex(l)||"&nbsp;"}</span>`:lex(l)).join("\n")+" ";
  $("#paint").scrollTop=$("#code").scrollTop;$("#paint").scrollLeft=$("#code").scrollLeft;
 }
-$("#code").addEventListener("input",()=>{badLine=null;hideError();$("#celebrate").classList.remove("show");paint()});
+$("#code").addEventListener("input",()=>{badLine=null;hideError();paint()});
 $("#code").addEventListener("scroll",paint);paint();
 
 function baseScene(){document.querySelectorAll(".flower").forEach(x=>x.remove())}
@@ -212,11 +210,11 @@ function friendly(raw,line){
 async function run(){
  if(!pyodide)return;
  baseScene();hideError();badLine=null;paint();$("#status").textContent="Growing your garden…";
- try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);$("#status").textContent="✨ Your code worked!";$("#celebrate").classList.add("show")}
+ try{await pyodide.runPythonAsync(library+"\n"+$("#code").value);$("#status").textContent="✨ Your code worked!";}
  catch(e){let line=studentLine(e);badLine=line;paint();$("#status").textContent="🌱 Almost — there's a code problem.";$("#error").innerHTML=friendly(e,line);$("#error").classList.add("show")}
 }
 $("#run").onclick=run;
-$("#reset").onclick=()=>{$("#code").value=starter;badLine=null;hideError();$("#celebrate").classList.remove("show");paint();run()};
+$("#reset").onclick=()=>{$("#code").value=starter;badLine=null;hideError();paint();run()};
 
 async function boot(){
  try{
