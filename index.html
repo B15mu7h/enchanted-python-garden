@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Enchanted Python Garden v0.7</title>
+<title>Enchanted Python Garden v0.8</title>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
 <style>
 :root{--ink:#f9f4ff;--muted:#cfc3e9;--glass:rgba(27,18,54,.72);--line:rgba(255,255,255,.14);--pink:#ff8ed8;--lav:#b89cff}
@@ -17,7 +17,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
 .cardhead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}.cardhead strong{font-size:15px}.dots{display:flex;gap:6px}.dot{width:9px;height:9px;border-radius:50%;background:#ff8ed8}.dot:nth-child(2){background:#ffd36e}.dot:nth-child(3){background:#83e2bb}
 .lesson{padding:16px 18px;background:linear-gradient(90deg,rgba(255,142,216,.13),rgba(184,156,255,.09));border-bottom:1px solid var(--line)}
 .lesson b{color:#ffd7f1}.lesson span{color:var(--muted);font-size:13px;line-height:1.55}.lesson code{background:rgba(255,255,255,.1);color:#fff2a8;padding:2px 5px;border-radius:6px;font-family:monospace}
-.editorwrap{position:relative;padding:14px}.editor{width:100%;height:515px;border:0;outline:0;resize:vertical;border-radius:18px;background:#100d20;color:#f5eaff;padding:18px;font:14px/1.65 "SFMono-Regular",Consolas,monospace;tab-size:4;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.editorwrap{position:relative;padding:14px}.editor{width:100%;height:515px;border:0;outline:0;resize:vertical;border-radius:18px;background:#100d20;color:#f5eaff;padding:18px;font:14px/1.65 "SFMono-Regular",Consolas,monospace;font-weight:400;font-style:normal;letter-spacing:0;tab-size:4;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 .editor::selection{background:#7d5e9f}
 .actions{display:flex;gap:9px;align-items:center;padding:0 14px 14px}.btn{border:0;border-radius:999px;padding:12px 17px;font-weight:800;cursor:pointer}.run{background:linear-gradient(100deg,#ff89d2,#c29cff);color:#24132d;box-shadow:0 8px 24px rgba(255,137,210,.2)}.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line)}
 .status{margin-left:auto;color:var(--muted);font-size:12px;text-align:right;max-width:210px}
@@ -44,17 +44,17 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
 
 /* v0.7 syntax-highlighted editor */
 #editorWrap{position:relative;height:515px;border-radius:18px;overflow:hidden;background:#100d20;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-#highlight,#code{position:absolute;inset:0;width:100%;height:100%;margin:0;border:0;padding:18px;box-sizing:border-box;font:14px/1.65 "SFMono-Regular",Consolas,monospace;tab-size:4;white-space:pre-wrap;overflow:auto}
+#highlight,#code{position:absolute;inset:0;width:100%;height:100%;margin:0;border:0;padding:18px;box-sizing:border-box;font:14px/1.65 "SFMono-Regular",Consolas,monospace;font-weight:400;font-style:normal;letter-spacing:0;tab-size:4;white-space:pre-wrap;overflow:auto}
 #highlight{pointer-events:none;color:#f5eaff;background:#100d20}
 #code{resize:none;outline:0;background:transparent!important;color:transparent!important;caret-color:#fff;-webkit-text-fill-color:transparent;box-shadow:none!important;border-radius:0!important}
 #code::selection{background:rgba(184,156,255,.34)}
-.syn-comment{color:#72e7bd;font-style:italic;font-weight:650}
+.syn-comment{color:#72e7bd}
 .syn-string{color:#ffd47f}
 .syn-number{color:#85d9ff}
-.syn-bool{color:#ff9fd2;font-weight:800}
-.syn-key{color:#c7adff;font-weight:800}
-.syn-call{color:#ffb7e4;font-weight:800}
-.syn-error-line{display:inline-block;width:100%;margin-left:-8px;padding-left:8px;background:rgba(255,75,135,.24);box-shadow:inset 4px 0 0 #ff6f9f;border-radius:4px;text-decoration:underline wavy rgba(255,160,195,.95) 1px;text-underline-offset:4px}
+.syn-bool{color:#ff9fd2}
+.syn-key{color:#c7adff}
+.syn-call{color:#ffb7e4}
+.syn-error-line{background:rgba(255,75,135,.30);box-shadow:0 0 0 2px rgba(255,111,159,.35);border-radius:3px}
 .errorbox{margin:4px 14px 18px;padding:24px 26px;border:2px solid rgba(255,137,184,.72);background:linear-gradient(135deg,rgba(111,27,66,.74),rgba(47,25,80,.76));border-radius:22px;line-height:1.62;display:none;font-size:17px;box-shadow:0 16px 42px rgba(0,0,0,.3)}
 .errorbox.show{display:block}
 .errorbox b{color:#fff}
@@ -68,7 +68,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
 </head>
 <body>
 <header>
- <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.7</span></h1><p>Code something beautiful. ✨</p></div>
+ <div class="brand"><h1>🌸 Enchanted Python Garden <span style="font-size:.42em;vertical-align:top">v0.8</span></h1><p>Code something beautiful. ✨</p></div>
  <div class="badge">🐍 Real Python • runs in your browser</div>
 </header>
 
@@ -285,25 +285,71 @@ async function boot(){
 
 function escCode(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function highlightPython(src, errorLine=null){
+ const keywords=new Set(["class","def","if","else","elif","for","in","while","return","import","from","as","and","or","not"]);
+ const bools=new Set(["True","False","None"]);
+ const calls=new Set(["Flower","Butterfly"]);
+
+ function tokeniseLine(line){
+   let out="", i=0;
+   while(i<line.length){
+     const ch=line[i];
+
+     // A Python comment owns everything after #, unless # is inside a string.
+     if(ch==="#"){
+       out+='<span class="syn-comment">'+escCode(line.slice(i))+'</span>';
+       break;
+     }
+
+     // Quoted strings: keep # characters inside colours such as "#ff86d3".
+     if(ch==='"' || ch==="'"){
+       const quote=ch;
+       let j=i+1, escaped=false;
+       while(j<line.length){
+         const c=line[j];
+         if(!escaped && c===quote){ j++; break; }
+         if(!escaped && c==="\\"){ escaped=true; }
+         else { escaped=false; }
+         j++;
+       }
+       out+='<span class="syn-string">'+escCode(line.slice(i,j))+'</span>';
+       i=j; continue;
+     }
+
+     // Numbers.
+     if(/[0-9]/.test(ch) && (i===0 || !/[A-Za-z_]/.test(line[i-1]))){
+       let j=i+1;
+       while(j<line.length && /[0-9.]/.test(line[j])) j++;
+       out+='<span class="syn-number">'+escCode(line.slice(i,j))+'</span>';
+       i=j; continue;
+     }
+
+     // Python names / words.
+     if(/[A-Za-z_]/.test(ch)){
+       let j=i+1;
+       while(j<line.length && /[A-Za-z0-9_]/.test(line[j])) j++;
+       const word=line.slice(i,j);
+       const safeWord=escCode(word);
+       if(bools.has(word)) out+='<span class="syn-bool">'+safeWord+'</span>';
+       else if(keywords.has(word)) out+='<span class="syn-key">'+safeWord+'</span>';
+       else if(calls.has(word)) out+='<span class="syn-call">'+safeWord+'</span>';
+       else out+=safeWord;
+       i=j; continue;
+     }
+
+     out+=escCode(ch);
+     i++;
+   }
+   return out;
+ }
+
  return src.split("\n").map((line,i)=>{
-   // comments are deliberately processed as one block so instructions stand out
-   const hash=line.indexOf("#");
-   let code=hash>=0?line.slice(0,hash):line;
-   let comment=hash>=0?line.slice(hash):"";
-   let h=escCode(code);
-   h=h.replace(/(&quot;[^&]*?&quot;|&#039;.*?&#039;)/g,'<span class="syn-string">$1</span>');
-   h=h.replace(/\b(True|False|None)\b/g,'<span class="syn-bool">$1</span>');
-   h=h.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="syn-number">$1</span>');
-   h=h.replace(/\b(class|def|if|else|elif|for|in|while|return|import|from|as|and|or|not)\b/g,'<span class="syn-key">$1</span>');
-   h=h.replace(/\b(Flower|Butterfly)(?=\s*\()/g,'<span class="syn-call">$1</span>');
-   let rendered=h+(comment?'<span class="syn-comment">'+escCode(comment)+'</span>':"");
+   let rendered=tokeniseLine(line);
    if(errorLine===i+1){
-      rendered='<span class="syn-error-line">'+(rendered || '&nbsp;')+'</span>';
+     rendered='<span class="syn-error-line">'+(rendered || '&nbsp;')+'</span>';
    }
    return rendered;
  }).join("\n")+" ";
 }
-let currentErrorLine=null;
 function syncHighlight(){
  const code=$("#code"), hi=$("#highlight");
  hi.innerHTML=highlightPython(code.value,currentErrorLine);
